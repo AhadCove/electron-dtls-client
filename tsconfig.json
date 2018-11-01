@@ -1,16 +1,15 @@
 {
     "compileOnSave": true,
     "compilerOptions": {
-        "declaration": true,
-        "module": "commonjs",
+        "outDir": "build/",
+        "target": "es5",
         "moduleResolution": "node",
+        "module": "es2015",
+        "declaration": true,
         "noEmitOnError": true,
         "noImplicitAny": true,
-        "outDir": "build/",
         "removeComments": false,
         "stripInternal": true,
-        "target": "es2015",
-        "strictPropertyInitialization": true,
         "watch": false // true breaks circleci
     },
     "include": [

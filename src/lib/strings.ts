@@ -13,5 +13,5 @@ export function padStart(str: string, targetLen: number, fill: string = " "): st
 	// figure out how often we need to repeat <fill>
 	const missingLength = targetLen - str.length;
 	const repeats = Math.ceil(missingLength / fill.length);
-	return fill.repeat(repeats).substr(0, missingLength) + str;
+	return Array(repeats + 1).join(fill).substr(0, missingLength) + str;
 }

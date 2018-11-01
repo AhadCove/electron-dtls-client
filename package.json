@@ -1,6 +1,6 @@
 {
   "name": "electron-dtls-client",
-  "version": "0.5.4",
+  "version": "0.5.5",
   "description": "DTLS protocol implementation for Node.js written in TypeScript.",
   "main": "./build/dtls.js",
   "types": "./build/dtls.d.ts",
@@ -40,7 +40,7 @@
     "semver": "^5.5.0"
   },
   "engines": {
-    "node": ">=6"
+    "node": ">=10"
   },
   "repository": {
     "type": "git",

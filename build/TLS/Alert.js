@@ -1,13 +1,21 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const TLSStruct_1 = require("./TLSStruct");
-const TypeSpecs = require("./TypeSpecs");
-var AlertLevel;
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+import { TLSStruct } from "./TLSStruct";
+import * as TypeSpecs from "./TypeSpecs";
+export var AlertLevel;
 (function (AlertLevel) {
     AlertLevel[AlertLevel["warning"] = 1] = "warning";
     AlertLevel[AlertLevel["fatal"] = 2] = "fatal";
-})(AlertLevel = exports.AlertLevel || (exports.AlertLevel = {}));
-var AlertDescription;
+})(AlertLevel || (AlertLevel = {}));
+export var AlertDescription;
 (function (AlertDescription) {
     AlertDescription[AlertDescription["close_notify"] = 0] = "close_notify";
     AlertDescription[AlertDescription["unexpected_message"] = 10] = "unexpected_message";
@@ -34,20 +42,23 @@ var AlertDescription;
     AlertDescription[AlertDescription["user_canceled"] = 90] = "user_canceled";
     AlertDescription[AlertDescription["no_renegotiation"] = 100] = "no_renegotiation";
     AlertDescription[AlertDescription["unsupported_extension"] = 110] = "unsupported_extension";
-})(AlertDescription = exports.AlertDescription || (exports.AlertDescription = {}));
-class Alert extends TLSStruct_1.TLSStruct {
-    constructor(level, description) {
-        super(Alert.__spec);
-        this.level = level;
-        this.description = description;
+})(AlertDescription || (AlertDescription = {}));
+var Alert = /** @class */ (function (_super) {
+    __extends(Alert, _super);
+    function Alert(level, description) {
+        var _this = _super.call(this, Alert.__spec) || this;
+        _this.level = level;
+        _this.description = description;
+        return _this;
     }
-    static createEmpty() {
+    Alert.createEmpty = function () {
         return new Alert(0, 0);
-    }
-}
-Alert.__spec = {
-    level: TypeSpecs.define.Enum("uint8", AlertLevel),
-    description: TypeSpecs.define.Enum("uint8", AlertDescription),
-};
-Alert.spec = TypeSpecs.define.Struct(Alert);
-exports.Alert = Alert;
+    };
+    Alert.__spec = {
+        level: TypeSpecs.define.Enum("uint8", AlertLevel),
+        description: TypeSpecs.define.Enum("uint8", AlertDescription),
+    };
+    Alert.spec = TypeSpecs.define.Struct(Alert);
+    return Alert;
+}(TLSStruct));
+export { Alert };

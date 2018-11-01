@@ -1,45 +1,51 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-function getPrimitiveSize(spec) {
+export function getPrimitiveSize(spec) {
     return +spec.size.substr("uint".length);
 }
-exports.getPrimitiveSize = getPrimitiveSize;
-var Vector;
+export var Vector;
 (function (Vector) {
     function isVariableLength(spec) {
         return spec.maxLength !== spec.minLength;
     }
     Vector.isVariableLength = isVariableLength;
-})(Vector = exports.Vector || (exports.Vector = {}));
-var Buffer;
+})(Vector || (Vector = {}));
+export var Buffer;
 (function (Buffer) {
     function isVariableLength(spec) {
         return spec.maxLength !== spec.minLength;
     }
     Buffer.isVariableLength = isVariableLength;
-})(Buffer = exports.Buffer || (exports.Buffer = {}));
+})(Buffer || (Buffer = {}));
 // Shortcuts:
-exports.define = {
-    Enum: (size, enumType) => ({ type: "enum", size, enumType }),
-    Number: (size) => ({ type: "number", size }),
-    Struct: (structType) => ({
+export var define = {
+    Enum: function (size, enumType) { return ({ type: "enum", size: size, enumType: enumType }); },
+    Number: function (size) { return ({ type: "number", size: size }); },
+    Struct: function (structType) { return ({
         type: "struct",
         structType: structType,
-    }),
-    Vector: (itemSpec, minLength = 0, maxLength = minLength, optional = false) => ({
-        type: "vector",
-        itemSpec,
-        minLength, maxLength,
-        optional,
-    }),
-    Buffer: (minLength = Number.POSITIVE_INFINITY, maxLength = minLength) => ({
-        type: "buffer",
-        minLength, maxLength,
-    }),
+    }); },
+    Vector: function (itemSpec, minLength, maxLength, optional) {
+        if (minLength === void 0) { minLength = 0; }
+        if (maxLength === void 0) { maxLength = minLength; }
+        if (optional === void 0) { optional = false; }
+        return ({
+            type: "vector",
+            itemSpec: itemSpec,
+            minLength: minLength, maxLength: maxLength,
+            optional: optional,
+        });
+    },
+    Buffer: function (minLength, maxLength) {
+        if (minLength === void 0) { minLength = Number.POSITIVE_INFINITY; }
+        if (maxLength === void 0) { maxLength = minLength; }
+        return ({
+            type: "buffer",
+            minLength: minLength, maxLength: maxLength,
+        });
+    },
 };
-exports.uint8 = Object.freeze(exports.define.Number("uint8"));
-exports.uint16 = Object.freeze(exports.define.Number("uint16"));
-exports.uint24 = Object.freeze(exports.define.Number("uint24"));
-exports.uint32 = Object.freeze(exports.define.Number("uint32"));
-exports.uint48 = Object.freeze(exports.define.Number("uint48"));
-exports.uint64 = Object.freeze(exports.define.Number("uint64"));
+export var uint8 = Object.freeze(define.Number("uint8"));
+export var uint16 = Object.freeze(define.Number("uint16"));
+export var uint24 = Object.freeze(define.Number("uint24"));
+export var uint32 = Object.freeze(define.Number("uint32"));
+export var uint48 = Object.freeze(define.Number("uint48"));
+export var uint64 = Object.freeze(define.Number("uint64"));
