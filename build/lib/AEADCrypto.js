@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const crypto = require("crypto");
-const semver = require("semver");
 function encryptNative(mode, key, iv, plaintext, additionalData, authTagLength) {
     // prepare encryption
     const algorithm = `aes-${key.length * 8}-${mode}`;
@@ -38,20 +37,14 @@ let importedCCM;
 let importedGCM;
 let nativeCCM;
 let nativeGCM;
-if (semver.satisfies(process.version, ">=10")) {
-    // We can use the native methods
-    nativeCCM = {
-        encrypt: encryptNative.bind(undefined, "ccm"),
-        decrypt: decryptNative.bind(undefined, "ccm"),
-    };
-    nativeGCM = {
-        encrypt: encryptNative.bind(undefined, "gcm"),
-        decrypt: decryptNative.bind(undefined, "gcm"),
-    };
-}
-else {
-    // import from the node-aead-crypto module
-    ({ ccm: importedCCM, gcm: importedGCM } = require("node-aead-crypto"));
-}
+// We can use the native methods
+nativeCCM = {
+    encrypt: encryptNative.bind(undefined, "ccm"),
+    decrypt: decryptNative.bind(undefined, "ccm"),
+};
+nativeGCM = {
+    encrypt: encryptNative.bind(undefined, "gcm"),
+    decrypt: decryptNative.bind(undefined, "gcm"),
+};
 exports.ccm = importedCCM || nativeCCM;
 exports.gcm = importedGCM || nativeGCM;
