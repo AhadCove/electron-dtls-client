@@ -12,7 +12,7 @@ import { TLSStruct } from "./TLS/TLSStruct";
 
 // enable debug output
 import * as debugPackage from "debug";
-const debug = debugPackage("node-dtls-client");
+const debug = debugPackage("electron-dtls-client");
 
 export namespace dtls {
 

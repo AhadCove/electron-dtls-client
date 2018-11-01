@@ -9,7 +9,7 @@ const DTLSCompressed_1 = require("./DTLSCompressed");
 const DTLSPlaintext_1 = require("./DTLSPlaintext");
 // enable debug output
 const debugPackage = require("debug");
-const debug = debugPackage("node-dtls-client");
+const debug = debugPackage("electron-dtls-client");
 class RecordLayer {
     // TODO: specify connection end
     constructor(udpSocket, options) {

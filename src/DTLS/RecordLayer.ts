@@ -12,7 +12,7 @@ import { DTLSPlaintext } from "./DTLSPlaintext";
 
 // enable debug output
 import * as debugPackage from "debug";
-const debug = debugPackage("node-dtls-client");
+const debug = debugPackage("electron-dtls-client");
 
 export interface Epoch {
 	index: number;

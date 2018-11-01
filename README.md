@@ -1,9 +1,12 @@
-# node-dtls-client
+# electron-dtls-client
 
-[![node](https://img.shields.io/node/v/node-dtls-client.svg) ![npm](https://img.shields.io/npm/v/node-dtls-client.svg)](https://www.npmjs.com/package/node-dtls-client)
+This is a fork from [Alcazone](https://github.com/AlCalzone/node-dtls-client)
+It was made to work with electron
 
-[![Build Status](https://img.shields.io/circleci/project/github/AlCalzone/node-dtls-client.svg)](https://circleci.com/gh/AlCalzone/node-dtls-client)
-[![Coverage Status](https://img.shields.io/coveralls/github/AlCalzone/node-dtls-client.svg)](https://coveralls.io/github/AlCalzone/node-dtls-client)
+[![node](https://img.shields.io/node/v/electron-dtls-client.svg) ![npm](https://img.shields.io/npm/v/electron-dtls-client.svg)](https://www.npmjs.com/package/electron-dtls-client)
+
+[![Build Status](https://img.shields.io/circleci/project/github/AhadCove/electron-dtls-client.svg)](https://circleci.com/gh/AhadCove/electron-dtls-client)
+[![Coverage Status](https://img.shields.io/coveralls/github/AhadCove/electron-dtls-client.svg)](https://coveralls.io/github/AhadCove/electron-dtls-client)
 
 USE AT YOUR OWN RISK!
 
@@ -18,7 +21,7 @@ This libary's main goal is to allow using protocols that *require* DTLS.
 
 ### Establish a secure connection:
 ```js
-var dtls = require("node-dtls-client");
+var dtls = require("electron-dtls-client");
 
 const socket = dtls
 	// create a socket and initialize the secure connection
@@ -69,63 +72,10 @@ The events are defined as follows:
 - `message`: The socket received some data.
 - `close`: The connection was closed successfully.
 
-
-## Missing features:
-- [x] alert protocol implementation (partially supported)
-- [ ] cipher suites with non-PSK key exchange algorithms: `dhe_dss` | `dhe_rsa` | `rsa` | `dh_dss` | `dh_rsa` | `dhe_psk` | `rsa_psk`
-- [ ] packet retransmission
-- [ ] session renegotiation
-- [ ] other compression algorithms except NULL
-
 **PRs adding support for these are welcome!**
-
-## Changelog
-
-### 0.5.4 (2018-05-01)
-* (AlCalzone) **Potentially breaking change:** No longer use `node-aead-crypto` on NodeJS 10+
-
-### 0.4.0 (2018-05-01)
-* (AlCalzone) Check connection options before creating a new socket
-* (AlCalzone) Improve testing setup, use CircleCI for deployment
-
-### 0.3.2 (2018-04-27)
-* (AlCalzone) Support NodeJS 10
-
-### 0.3.1 (2018-02-13)
-* (AlCalzone) Suppress spurious errors from DNS lookup after the connection has already timed out
-
-### 0.3.0 (2018-02-05)
-* (AlCalzone) Fixed cipher parameters of 3DES and 256-bit AES (AEAD) cipher suites.
-* (AlCalzone) Added the possibility to limit the cipher suites to use
-
-### 0.2.2 (2017-09-25)
-* (AlCalzone) Removed possible sources of infinite loops
-
-### 0.2.1 (2017-09-25)
-* (AlCalzone) Fix error handling while trying to connect to a non-available endpoint
-
-### 0.2.0 (2017-09-21)
-* (AlCalzone) add partial alert protocol implementation
-
-### 0.1.0 (2017-08-23)
-* (AlCalzone) publish to npm
-
-### 0.0.3 (2017-08-09)
-* (AlCalzone) bugfixes
-
-### 0.0.2 (2017-08-01)
-* (AlCalzone) improved error and timeout handling in the socket wrapper.
-
-### 0.0.1
-* (AlCalzone) initial release. 
-
-## Contributors
-* https://github.com/thoukydides - Thanks for noticing the errors in the 3DES and 256-bit AES (AEAD) cipher suites.
 
 ## License
 The MIT License (MIT)
-
-Copyright (c) 2017 AlCalzone <d.griesel@gmx.net>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

@@ -10,7 +10,7 @@ const ContentType_1 = require("./TLS/ContentType");
 const TLSStruct_1 = require("./TLS/TLSStruct");
 // enable debug output
 const debugPackage = require("debug");
-const debug = debugPackage("node-dtls-client");
+const debug = debugPackage("electron-dtls-client");
 var dtls;
 (function (dtls) {
     /**

@@ -1,15 +1,15 @@
 {
-  "name": "node-dtls-client",
+  "name": "electron-dtls-client",
   "version": "0.5.4",
   "description": "DTLS protocol implementation for Node.js written in TypeScript.",
   "main": "./build/dtls.js",
   "types": "./build/dtls.d.ts",
   "author": {
-    "name": "AlCalzone",
-    "email": "d.griesel@gmx.net"
+    "name": "Ahad Cove",
+    "email": "ahadcove@gmail.com"
   },
   "license": "MIT",
-  "homepage": "https://github.com/AlCalzone/node-dtls-client",
+  "homepage": "https://github.com/AhadCove/electron-dtls-client",
   "devDependencies": {
     "@types/chai": "^4.1.3",
     "@types/debug": "0.0.30",
@@ -44,7 +44,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/AlCalzone/node-dtls-client.git"
+    "url": "git+https://github.com/AhadCove/electron-dtls-client.git"
   },
   "scripts": {
     "build": "tsc",

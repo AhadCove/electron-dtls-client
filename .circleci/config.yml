@@ -5,18 +5,18 @@
 
 # Define the used images
 node6: &node6
-  working_directory: &workdir_node6 ~/node-dtls-client/node6
+  working_directory: &workdir_node6 ~/electron-dtls-client/node6
   docker:
     - image: circleci/node:6
 
 node6: &node8
-  working_directory: &workdir_node8 ~/node-dtls-client/node8
+  working_directory: &workdir_node8 ~/electron-dtls-client/node8
   docker:
     - image: circleci/node:8
 
 # use "latest" for lint and publish
 latest: &latest
-  working_directory: &workdir_latest ~/node-dtls-client/latest
+  working_directory: &workdir_latest ~/electron-dtls-client/latest
   docker:
     - image: circleci/node:10
 
