@@ -1,4 +1,6 @@
-import * as crypto from "crypto";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var crypto = require("crypto");
 function encryptNative(mode, key, iv, plaintext, additionalData, authTagLength) {
     // prepare encryption
     var algorithm = "aes-" + key.length * 8 + "-" + mode;
@@ -44,5 +46,5 @@ nativeGCM = {
     encrypt: encryptNative.bind(undefined, "gcm"),
     decrypt: decryptNative.bind(undefined, "gcm"),
 };
-export var ccm = importedCCM || nativeCCM;
-export var gcm = importedGCM || nativeGCM;
+exports.ccm = importedCCM || nativeCCM;
+exports.gcm = importedGCM || nativeGCM;

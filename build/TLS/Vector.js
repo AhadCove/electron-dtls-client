@@ -1,6 +1,8 @@
-import { bufferToNumber, numberToBuffer } from "../lib/BitConverter";
-import { fitToWholeBytes } from "../lib/util";
-import * as TypeSpecs from "./TypeSpecs";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var BitConverter_1 = require("../lib/BitConverter");
+var util_1 = require("../lib/util");
+var TypeSpecs = require("./TypeSpecs");
 var Vector = /** @class */ (function () {
     function Vector(items) {
         if (items === void 0) { items = []; }
@@ -18,7 +20,7 @@ var Vector = /** @class */ (function () {
             case "number":
             case "enum":
                 bitSize = TypeSpecs.getPrimitiveSize(spec.itemSpec);
-                serializedItems = this.items.map(function (v) { return numberToBuffer(v, bitSize); });
+                serializedItems = this.items.map(function (v) { return BitConverter_1.numberToBuffer(v, bitSize); });
                 break;
             case "struct":
                 serializedItems = this.items.map(function (v) { return v.serialize(); });
@@ -26,9 +28,9 @@ var Vector = /** @class */ (function () {
         var ret = Buffer.concat(serializedItems);
         // for variable length vectors, prepend the maximum length
         if (TypeSpecs.Vector.isVariableLength(spec)) {
-            var lengthBits = (8 * fitToWholeBytes(spec.maxLength));
+            var lengthBits = (8 * util_1.fitToWholeBytes(spec.maxLength));
             ret = Buffer.concat([
-                numberToBuffer(ret.length, lengthBits),
+                BitConverter_1.numberToBuffer(ret.length, lengthBits),
                 ret,
             ]);
         }
@@ -40,8 +42,8 @@ var Vector = /** @class */ (function () {
         var length = spec.maxLength;
         var delta = 0;
         if (TypeSpecs.Vector.isVariableLength(spec)) {
-            var lengthBits = (8 * fitToWholeBytes(spec.maxLength));
-            length = bufferToNumber(buf, lengthBits, offset);
+            var lengthBits = (8 * util_1.fitToWholeBytes(spec.maxLength));
+            length = BitConverter_1.bufferToNumber(buf, lengthBits, offset);
             delta += lengthBits / 8;
         }
         var i;
@@ -50,7 +52,7 @@ var Vector = /** @class */ (function () {
             case "enum":
                 var bitSize = TypeSpecs.getPrimitiveSize(spec.itemSpec);
                 for (i = 0; i < length; i += bitSize / 8) {
-                    this.items.push(bufferToNumber(buf, bitSize, offset + delta)); // we know this is a number!
+                    this.items.push(BitConverter_1.bufferToNumber(buf, bitSize, offset + delta)); // we know this is a number!
                     delta += bitSize / 8;
                 }
                 break;
@@ -82,4 +84,4 @@ var Vector = /** @class */ (function () {
     };
     return Vector;
 }());
-export { Vector };
+exports.Vector = Vector;

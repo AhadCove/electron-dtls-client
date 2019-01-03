@@ -1,3 +1,4 @@
+"use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -8,9 +9,10 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-import * as crypto from "crypto";
-import { TLSStruct } from "./TLSStruct";
-import * as TypeSpecs from "./TypeSpecs";
+Object.defineProperty(exports, "__esModule", { value: true });
+var crypto = require("crypto");
+var TLSStruct_1 = require("./TLSStruct");
+var TypeSpecs = require("./TypeSpecs");
 var Random = /** @class */ (function (_super) {
     __extends(Random, _super);
     function Random(gmt_unix_time, random_bytes) {
@@ -33,5 +35,5 @@ var Random = /** @class */ (function (_super) {
         random_bytes: TypeSpecs.define.Buffer(28),
     };
     return Random;
-}(TLSStruct));
-export { Random };
+}(TLSStruct_1.TLSStruct));
+exports.Random = Random;

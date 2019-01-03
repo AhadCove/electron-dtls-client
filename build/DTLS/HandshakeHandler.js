@@ -1,14 +1,16 @@
-import { CipherSuites } from "../DTLS/CipherSuites";
-import { Alert, AlertDescription, AlertLevel } from "../TLS/Alert";
-import { ChangeCipherSpec } from "../TLS/ChangeCipherSpec";
-import { CompressionMethod } from "../TLS/ConnectionState";
-import { ContentType } from "../TLS/ContentType";
-import { PreMasterSecret } from "../TLS/PreMasterSecret";
-import { PRF } from "../TLS/PRF";
-import { ProtocolVersion } from "../TLS/ProtocolVersion";
-import { Random } from "../TLS/Random";
-import { Vector } from "../TLS/Vector";
-import * as Handshake from "./Handshake";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var CipherSuites_1 = require("../DTLS/CipherSuites");
+var Alert_1 = require("../TLS/Alert");
+var ChangeCipherSpec_1 = require("../TLS/ChangeCipherSpec");
+var ConnectionState_1 = require("../TLS/ConnectionState");
+var ContentType_1 = require("../TLS/ContentType");
+var PreMasterSecret_1 = require("../TLS/PreMasterSecret");
+var PRF_1 = require("../TLS/PRF");
+var ProtocolVersion_1 = require("../TLS/ProtocolVersion");
+var Random_1 = require("../TLS/Random");
+var Vector_1 = require("../TLS/Vector");
+var Handshake = require("./Handshake");
 var ClientHandshakeHandler = /** @class */ (function () {
     function ClientHandshakeHandler(recordLayer, options, finishedCallback) {
         var _this = this;
@@ -42,7 +44,7 @@ var ClientHandshakeHandler = /** @class */ (function () {
                             // remember the random value
                             _this.recordLayer.nextEpoch.connectionState.server_random = hello.random.serialize();
                             // set the cipher suite and compression method to be used
-                            _this.recordLayer.nextEpoch.connectionState.cipherSuite = CipherSuites[hello.cipher_suite];
+                            _this.recordLayer.nextEpoch.connectionState.cipherSuite = CipherSuites_1.CipherSuites[hello.cipher_suite];
                             _this.recordLayer.nextEpoch.connectionState.compression_algorithm = hello.compression_method;
                             _this.recordLayer.currentWriteEpoch.connectionState.protocolVersion = hello.server_version;
                             _this.recordLayer.nextWriteEpoch.connectionState.protocolVersion = hello.server_version;
@@ -78,10 +80,10 @@ var ClientHandshakeHandler = /** @class */ (function () {
                                     flight.push(clKeyExchange);
                                     // now we have everything, construct the pre master secret
                                     var psk = Buffer.from(_this.options.psk[psk_identity], "ascii");
-                                    preMasterSecret = new PreMasterSecret(null, psk);
+                                    preMasterSecret = new PreMasterSecret_1.PreMasterSecret(null, psk);
                                     break;
                                 default:
-                                    _this.finishedCallback(new Alert(AlertLevel.fatal, AlertDescription.handshake_failure), new Error(connState.cipherSuite.keyExchange + " key exchange not implemented"));
+                                    _this.finishedCallback(new Alert_1.Alert(Alert_1.AlertLevel.fatal, Alert_1.AlertDescription.handshake_failure), new Error(connState.cipherSuite.keyExchange + " key exchange not implemented"));
                                     return;
                             }
                             // we now have everything to compute the master secret
@@ -116,7 +118,7 @@ var ClientHandshakeHandler = /** @class */ (function () {
                 }
                 else {
                     _this._isHandshaking = false;
-                    _this.finishedCallback(new Alert(AlertLevel.fatal, AlertDescription.decrypt_error), new Error("DTLS handshake failed"));
+                    _this.finishedCallback(new Alert_1.Alert(Alert_1.AlertLevel.fatal, Alert_1.AlertDescription.decrypt_error), new Error("DTLS handshake failed"));
                     // connection is automatically canceled by the callback
                 }
             },
@@ -149,8 +151,8 @@ var ClientHandshakeHandler = /** @class */ (function () {
         // ==============================
         // start by sending a ClientHello
         var hello = Handshake.ClientHello.createEmpty();
-        hello.client_version = new ProtocolVersion(~1, ~2);
-        hello.random = Random.createNew();
+        hello.client_version = new ProtocolVersion_1.ProtocolVersion(~1, ~2);
+        hello.random = Random_1.Random.createNew();
         // remember this for crypto stuff
         this.recordLayer.nextEpoch.connectionState.client_random = hello.random.serialize();
         hello.session_id = Buffer.from([]);
@@ -169,9 +171,9 @@ var ClientHandshakeHandler = /** @class */ (function () {
             "TLS_PSK_WITH_AES_128_CCM_8",
             "TLS_PSK_WITH_AES_256_CCM_8",
         ];
-        hello.cipher_suites = new Vector(cipherSuites.map(function (cs) { return CipherSuites[cs].id; }));
-        hello.compression_methods = new Vector([CompressionMethod.null]);
-        hello.extensions = new Vector();
+        hello.cipher_suites = new Vector_1.Vector(cipherSuites.map(function (cs) { return CipherSuites_1.CipherSuites[cs].id; }));
+        hello.compression_methods = new Vector_1.Vector([ConnectionState_1.CompressionMethod.null]);
+        hello.extensions = new Vector_1.Vector();
         this.sendFlight([hello], [
             Handshake.HandshakeType.server_hello_done,
             Handshake.HandshakeType.hello_verify_request,
@@ -286,8 +288,8 @@ var ClientHandshakeHandler = /** @class */ (function () {
             if (handshake.msg_type === Handshake.HandshakeType.finished) {
                 // before finished messages, ALWAYS send a ChangeCipherSpec
                 _this.bufferedOutgoingMessages.push({
-                    type: ContentType.change_cipher_spec,
-                    data: (ChangeCipherSpec.createEmpty()).serialize(),
+                    type: ContentType_1.ContentType.change_cipher_spec,
+                    data: (ChangeCipherSpec_1.ChangeCipherSpec.createEmpty()).serialize(),
                 });
                 // TODO: how do we handle retransmission here?
             }
@@ -306,7 +308,7 @@ var ClientHandshakeHandler = /** @class */ (function () {
             var fragments = fragment
                 .split()
                 .map(function (f) { return ({
-                type: ContentType.handshake,
+                type: ContentType_1.ContentType.handshake,
                 data: f.serialize(),
             }); });
             (_a = _this.bufferedOutgoingMessages).push.apply(_a, fragments);
@@ -376,7 +378,7 @@ var ClientHandshakeHandler = /** @class */ (function () {
         var connState = (source === "client")
             ? this.recordLayer.nextWriteEpoch.connectionState
             : this.recordLayer.currentReadEpoch.connectionState;
-        var PRF_fn = PRF[connState.cipherSuite.prfAlgorithm];
+        var PRF_fn = PRF_1.PRF[connState.cipherSuite.prfAlgorithm];
         var handshakeHash = PRF_fn.hashFunction(handshakeMessages);
         // and use it to compute the verify data
         var verify_data = PRF_fn(connState.master_secret, source + " finished", handshakeHash, connState.cipherSuite.verify_data_length);
@@ -384,7 +386,7 @@ var ClientHandshakeHandler = /** @class */ (function () {
     };
     return ClientHandshakeHandler;
 }());
-export { ClientHandshakeHandler };
+exports.ClientHandshakeHandler = ClientHandshakeHandler;
 /* Client                                          Server
    ------                                          ------
 

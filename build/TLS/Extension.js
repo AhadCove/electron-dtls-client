@@ -1,3 +1,4 @@
+"use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -8,15 +9,16 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-import { TLSStruct } from "./TLSStruct";
-import * as TypeSpecs from "./TypeSpecs";
-export var ExtensionType;
+Object.defineProperty(exports, "__esModule", { value: true });
+var TLSStruct_1 = require("./TLSStruct");
+var TypeSpecs = require("./TypeSpecs");
+var ExtensionType;
 (function (ExtensionType) {
     ExtensionType[ExtensionType["signature_algorithms"] = 13] = "signature_algorithms";
-})(ExtensionType || (ExtensionType = {}));
+})(ExtensionType = exports.ExtensionType || (exports.ExtensionType = {}));
 (function (ExtensionType) {
     ExtensionType.spec = TypeSpecs.define.Enum("uint16", ExtensionType);
-})(ExtensionType || (ExtensionType = {}));
+})(ExtensionType = exports.ExtensionType || (exports.ExtensionType = {}));
 var Extension = /** @class */ (function (_super) {
     __extends(Extension, _super);
     function Extension(extension_type, extension_data) {
@@ -34,5 +36,5 @@ var Extension = /** @class */ (function (_super) {
     };
     Extension.spec = TypeSpecs.define.Struct(Extension);
     return Extension;
-}(TLSStruct));
-export { Extension };
+}(TLSStruct_1.TLSStruct));
+exports.Extension = Extension;

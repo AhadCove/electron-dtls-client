@@ -1,9 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * Calculates how many bytes are neccessary to express the given value
  * @param value {number} - the value to be measured
  * @returns {number}
  */
-export function fitToWholeBytes(value) {
+function fitToWholeBytes(value) {
     var ret = 0;
     while (value !== 0) {
         ret++;
@@ -13,3 +15,4 @@ export function fitToWholeBytes(value) {
         ret++;
     return ret;
 }
+exports.fitToWholeBytes = fitToWholeBytes;

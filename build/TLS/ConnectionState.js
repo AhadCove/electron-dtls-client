@@ -1,15 +1,17 @@
-import { CipherSuites } from "../DTLS/CipherSuites";
-import { ProtocolVersion } from "../TLS/ProtocolVersion";
-import { PRF } from "./PRF";
-import * as TypeSpecs from "./TypeSpecs";
-export var CompressionMethod;
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var CipherSuites_1 = require("../DTLS/CipherSuites");
+var ProtocolVersion_1 = require("../TLS/ProtocolVersion");
+var PRF_1 = require("./PRF");
+var TypeSpecs = require("./TypeSpecs");
+var CompressionMethod;
 (function (CompressionMethod) {
     CompressionMethod[CompressionMethod["null"] = 0] = "null";
-})(CompressionMethod || (CompressionMethod = {}));
+})(CompressionMethod = exports.CompressionMethod || (exports.CompressionMethod = {}));
 // tslint:disable-next-line:no-namespace
 (function (CompressionMethod) {
     CompressionMethod.spec = TypeSpecs.define.Enum("uint8", CompressionMethod);
-})(CompressionMethod || (CompressionMethod = {}));
+})(CompressionMethod = exports.CompressionMethod || (exports.CompressionMethod = {}));
 var master_secret_length = 48;
 var client_random_length = 32;
 var server_random_length = 32;
@@ -24,8 +26,8 @@ var ConnectionState = /** @class */ (function () {
         // 	}
         // }
         this.entity = "client";
-        this.cipherSuite = CipherSuites.TLS_NULL_WITH_NULL_NULL;
-        this.protocolVersion = new ProtocolVersion(~1, ~0); // default to DTLSv1.0 during handshakes
+        this.cipherSuite = CipherSuites_1.CipherSuites.TLS_NULL_WITH_NULL_NULL;
+        this.protocolVersion = new ProtocolVersion_1.ProtocolVersion(~1, ~0); // default to DTLSv1.0 during handshakes
         this.compression_algorithm = CompressionMethod.null;
     }
     Object.defineProperty(ConnectionState.prototype, "Cipher", {
@@ -55,7 +57,7 @@ var ConnectionState = /** @class */ (function () {
      * @param serverHelloRandom - The random data from the server hello message
      */
     ConnectionState.prototype.computeMasterSecret = function (preMasterSecret) {
-        this.master_secret = PRF[this.cipherSuite.prfAlgorithm](preMasterSecret.serialize(), "master secret", Buffer.concat([this.client_random, this.server_random]), master_secret_length);
+        this.master_secret = PRF_1.PRF[this.cipherSuite.prfAlgorithm](preMasterSecret.serialize(), "master secret", Buffer.concat([this.client_random, this.server_random]), master_secret_length);
         // now we can compute the key material
         this.computeKeyMaterial();
     };
@@ -63,7 +65,7 @@ var ConnectionState = /** @class */ (function () {
      * Calculates the key components
      */
     ConnectionState.prototype.computeKeyMaterial = function () {
-        var keyBlock = PRF[this.cipherSuite.prfAlgorithm](this.master_secret, "key expansion", Buffer.concat([this.server_random, this.client_random]), 2 * (this.cipherSuite.MAC.keyAndHashLength + this.cipherSuite.Cipher.keyLength + this.cipherSuite.Cipher.fixedIvLength));
+        var keyBlock = PRF_1.PRF[this.cipherSuite.prfAlgorithm](this.master_secret, "key expansion", Buffer.concat([this.server_random, this.client_random]), 2 * (this.cipherSuite.MAC.keyAndHashLength + this.cipherSuite.Cipher.keyLength + this.cipherSuite.Cipher.fixedIvLength));
         var offset = 0;
         function read(length) {
             var ret = keyBlock.slice(offset, offset + length);
@@ -81,4 +83,4 @@ var ConnectionState = /** @class */ (function () {
     };
     return ConnectionState;
 }());
-export { ConnectionState };
+exports.ConnectionState = ConnectionState;

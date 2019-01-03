@@ -1,3 +1,4 @@
+"use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -8,18 +9,26 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-import * as dgram from "dgram";
-import { EventEmitter } from "events";
-import { FragmentedHandshake } from "./DTLS/Handshake";
-import { ClientHandshakeHandler } from "./DTLS/HandshakeHandler";
-import { RecordLayer } from "./DTLS/RecordLayer";
-import { Alert, AlertDescription, AlertLevel } from "./TLS/Alert";
-import { ContentType } from "./TLS/ContentType";
-import { TLSStruct } from "./TLS/TLSStruct";
+Object.defineProperty(exports, "__esModule", { value: true });
+var NodeDgram = require("dgram");
+var events_1 = require("events");
+var Handshake_1 = require("./DTLS/Handshake");
+var HandshakeHandler_1 = require("./DTLS/HandshakeHandler");
+var RecordLayer_1 = require("./DTLS/RecordLayer");
+var Alert_1 = require("./TLS/Alert");
+var ContentType_1 = require("./TLS/ContentType");
+var TLSStruct_1 = require("./TLS/TLSStruct");
+var dgram;
+if (typeof window !== "undefined" && typeof window.dgram !== undefined) {
+    dgram = window.dgram;
+}
+else {
+    dgram = NodeDgram;
+}
 // enable debug output
-import * as debugPackage from "debug";
+var debugPackage = require("debug");
 var debug = debugPackage("electron-dtls-client");
-export var dtls;
+var dtls;
 (function (dtls) {
     /**
      * Creates a DTLS-secured socket.
@@ -80,7 +89,7 @@ export var dtls;
             }
             // send finished data over UDP
             var packet = {
-                type: ContentType.application_data,
+                type: ContentType_1.ContentType.application_data,
                 data: data,
             };
             this.recordLayer.send(packet, callback);
@@ -90,7 +99,7 @@ export var dtls;
          */
         Socket.prototype.close = function (callback) {
             var _this = this;
-            this.sendAlert(new Alert(AlertLevel.warning, AlertDescription.close_notify), function (e) {
+            this.sendAlert(new Alert_1.Alert(Alert_1.AlertLevel.warning, Alert_1.AlertDescription.close_notify), function (e) {
                 _this.udp.close();
                 if (callback)
                     _this.once("close", callback);
@@ -103,11 +112,11 @@ export var dtls;
             if (this._connectionTimeout != null)
                 clearTimeout(this._connectionTimeout);
             // initialize record layer
-            this.recordLayer = new RecordLayer(this.udp, this.options);
+            this.recordLayer = new RecordLayer_1.RecordLayer(this.udp, this.options);
             // reuse the connection timeout for handshake timeout watching
             this._connectionTimeout = setTimeout(function () { return _this.expectHandshake(); }, this.options.timeout);
             // also start handshake
-            this.handshakeHandler = new ClientHandshakeHandler(this.recordLayer, this.options, function (alert, err) {
+            this.handshakeHandler = new HandshakeHandler_1.ClientHandshakeHandler(this.recordLayer, this.options, function (alert, err) {
                 var nextStep = function () {
                     // if we have an error, terminate the connection
                     if (err) {
@@ -154,7 +163,7 @@ export var dtls;
         Socket.prototype.sendAlert = function (alert, callback) {
             // send alert to the other party
             var packet = {
-                type: ContentType.alert,
+                type: ContentType_1.ContentType.alert,
                 data: alert.serialize(),
             };
             this.recordLayer.send(packet, callback);
@@ -166,32 +175,32 @@ export var dtls;
             for (var _i = 0, messages_1 = messages; _i < messages_1.length; _i++) {
                 var msg = messages_1[_i];
                 switch (msg.type) {
-                    case ContentType.handshake:
-                        var handshake = TLSStruct.from(FragmentedHandshake.spec, msg.data).result;
+                    case ContentType_1.ContentType.handshake:
+                        var handshake = TLSStruct_1.TLSStruct.from(Handshake_1.FragmentedHandshake.spec, msg.data).result;
                         this.handshakeHandler.processIncomingMessage(handshake);
                         break;
-                    case ContentType.change_cipher_spec:
+                    case ContentType_1.ContentType.change_cipher_spec:
                         this.recordLayer.advanceReadEpoch();
                         break;
-                    case ContentType.alert:
-                        var alert_1 = TLSStruct.from(Alert.spec, msg.data).result;
-                        if (alert_1.level === AlertLevel.fatal) {
+                    case ContentType_1.ContentType.alert:
+                        var alert_1 = TLSStruct_1.TLSStruct.from(Alert_1.Alert.spec, msg.data).result;
+                        if (alert_1.level === Alert_1.AlertLevel.fatal) {
                             // terminate the connection when receiving a fatal alert
-                            var errorMessage = "received fatal alert: " + AlertDescription[alert_1.description];
+                            var errorMessage = "received fatal alert: " + Alert_1.AlertDescription[alert_1.description];
                             debug(errorMessage);
                             this.killConnection(new Error(errorMessage));
                         }
-                        else if (alert_1.level === AlertLevel.warning) {
+                        else if (alert_1.level === Alert_1.AlertLevel.warning) {
                             // not sure what to do with most warning alerts
                             switch (alert_1.description) {
-                                case AlertDescription.close_notify:
+                                case Alert_1.AlertDescription.close_notify:
                                     // except close_notify, which means we should terminate the connection
                                     this.close();
                                     break;
                             }
                         }
                         break;
-                    case ContentType.application_data:
+                    case ContentType_1.ContentType.application_data:
                         if (!this._handshakeFinished) {
                             // if we are still shaking hands, buffer the message until we're done
                             this.bufferedMessages.push({ msg: msg, rinfo: rinfo });
@@ -235,7 +244,7 @@ export var dtls;
                 this.emit("error", err);
         };
         return Socket;
-    }(EventEmitter));
+    }(events_1.EventEmitter));
     dtls.Socket = Socket;
     /**
      * Checks if a given object adheres to the Options interface definition
@@ -253,4 +262,4 @@ export var dtls;
         if (typeof opts.psk !== "object")
             throw new Error("The connection options must contain a PSK dictionary object!");
     }
-})(dtls || (dtls = {}));
+})(dtls = exports.dtls || (exports.dtls = {}));

@@ -1,3 +1,4 @@
+"use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -8,14 +9,15 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-import { TLSStruct } from "./TLSStruct";
-import * as TypeSpecs from "./TypeSpecs";
-export var AlertLevel;
+Object.defineProperty(exports, "__esModule", { value: true });
+var TLSStruct_1 = require("./TLSStruct");
+var TypeSpecs = require("./TypeSpecs");
+var AlertLevel;
 (function (AlertLevel) {
     AlertLevel[AlertLevel["warning"] = 1] = "warning";
     AlertLevel[AlertLevel["fatal"] = 2] = "fatal";
-})(AlertLevel || (AlertLevel = {}));
-export var AlertDescription;
+})(AlertLevel = exports.AlertLevel || (exports.AlertLevel = {}));
+var AlertDescription;
 (function (AlertDescription) {
     AlertDescription[AlertDescription["close_notify"] = 0] = "close_notify";
     AlertDescription[AlertDescription["unexpected_message"] = 10] = "unexpected_message";
@@ -42,7 +44,7 @@ export var AlertDescription;
     AlertDescription[AlertDescription["user_canceled"] = 90] = "user_canceled";
     AlertDescription[AlertDescription["no_renegotiation"] = 100] = "no_renegotiation";
     AlertDescription[AlertDescription["unsupported_extension"] = 110] = "unsupported_extension";
-})(AlertDescription || (AlertDescription = {}));
+})(AlertDescription = exports.AlertDescription || (exports.AlertDescription = {}));
 var Alert = /** @class */ (function (_super) {
     __extends(Alert, _super);
     function Alert(level, description) {
@@ -60,5 +62,5 @@ var Alert = /** @class */ (function (_super) {
     };
     Alert.spec = TypeSpecs.define.Struct(Alert);
     return Alert;
-}(TLSStruct));
-export { Alert };
+}(TLSStruct_1.TLSStruct));
+exports.Alert = Alert;

@@ -1,4 +1,4 @@
-﻿import * as dgram from "dgram";
+﻿import * as NodeDgram from "dgram";
 import { EventEmitter } from "events";
 import { CipherSuites } from "./DTLS/CipherSuites";
 import { FragmentedHandshake } from "./DTLS/Handshake";
@@ -9,6 +9,13 @@ import { ChangeCipherSpec } from "./TLS/ChangeCipherSpec";
 import { ContentType } from "./TLS/ContentType";
 import { Message } from "./TLS/Message";
 import { TLSStruct } from "./TLS/TLSStruct";
+
+let dgram: any;
+if (typeof window !== "undefined" && typeof (window as any).dgram !== undefined) {
+	dgram = (window as any).dgram;
+} else {
+	dgram = NodeDgram;
+}
 
 // enable debug output
 import * as debugPackage from "debug";
@@ -103,12 +110,12 @@ export namespace dtls {
 		}
 
 		// buffer messages while handshaking
-		private bufferedMessages: {msg: Message, rinfo: dgram.RemoteInfo}[] = [];
+		private bufferedMessages: {msg: Message, rinfo: any}[] = [];
 
 		/*
 			Internal Socket handler functions
 		*/
-		private udp: dgram.Socket;
+		private udp: any;
 
 		private udp_onListening() {
 			// connection successful
@@ -171,7 +178,7 @@ export namespace dtls {
 			this.recordLayer.send(packet, callback);
 		}
 
-		private udp_onMessage(udpMsg: Buffer, rinfo: dgram.RemoteInfo) {
+		private udp_onMessage(udpMsg: Buffer, rinfo: any) {
 			// decode the messages
 			const messages = this.recordLayer.receive(udpMsg);
 
@@ -282,7 +289,7 @@ export namespace dtls {
 	}
 
 	export type ListeningEventHandler = () => void;
-	export type MessageEventHandler = (msg: Buffer, rinfo: dgram.RemoteInfo) => void;
+	export type MessageEventHandler = (msg: Buffer, rinfo: any) => void;
 	export type CloseEventHandler = () => void;
 	export type ErrorEventHandler = (exception: Error) => void;
 	export type SendCallback = (error: Error, bytes: number) => void;

@@ -1,5 +1,7 @@
-import * as TypeSpecs from "../TLS/TypeSpecs";
-export var Cookie;
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var TypeSpecs = require("../TLS/TypeSpecs");
+var Cookie;
 (function (Cookie) {
     Cookie.spec = TypeSpecs.define.Buffer(0, Math.pow(2, 8) - 1);
-})(Cookie || (Cookie = {}));
+})(Cookie = exports.Cookie || (exports.Cookie = {}));

@@ -1,22 +1,25 @@
-export function getPrimitiveSize(spec) {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+function getPrimitiveSize(spec) {
     return +spec.size.substr("uint".length);
 }
-export var Vector;
+exports.getPrimitiveSize = getPrimitiveSize;
+var Vector;
 (function (Vector) {
     function isVariableLength(spec) {
         return spec.maxLength !== spec.minLength;
     }
     Vector.isVariableLength = isVariableLength;
-})(Vector || (Vector = {}));
-export var Buffer;
+})(Vector = exports.Vector || (exports.Vector = {}));
+var Buffer;
 (function (Buffer) {
     function isVariableLength(spec) {
         return spec.maxLength !== spec.minLength;
     }
     Buffer.isVariableLength = isVariableLength;
-})(Buffer || (Buffer = {}));
+})(Buffer = exports.Buffer || (exports.Buffer = {}));
 // Shortcuts:
-export var define = {
+exports.define = {
     Enum: function (size, enumType) { return ({ type: "enum", size: size, enumType: enumType }); },
     Number: function (size) { return ({ type: "number", size: size }); },
     Struct: function (structType) { return ({
@@ -43,9 +46,9 @@ export var define = {
         });
     },
 };
-export var uint8 = Object.freeze(define.Number("uint8"));
-export var uint16 = Object.freeze(define.Number("uint16"));
-export var uint24 = Object.freeze(define.Number("uint24"));
-export var uint32 = Object.freeze(define.Number("uint32"));
-export var uint48 = Object.freeze(define.Number("uint48"));
-export var uint64 = Object.freeze(define.Number("uint64"));
+exports.uint8 = Object.freeze(exports.define.Number("uint8"));
+exports.uint16 = Object.freeze(exports.define.Number("uint16"));
+exports.uint24 = Object.freeze(exports.define.Number("uint24"));
+exports.uint32 = Object.freeze(exports.define.Number("uint32"));
+exports.uint48 = Object.freeze(exports.define.Number("uint48"));
+exports.uint64 = Object.freeze(exports.define.Number("uint64"));

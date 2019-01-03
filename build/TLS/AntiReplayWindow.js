@@ -1,3 +1,5 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var width = 64; // bits / entries, must be multiple of INT_SIZE
 var INT_SIZE = 32; // in JS, bitwise operators use 32bit ints
 /**
@@ -97,4 +99,4 @@ var AntiReplayWindow = /** @class */ (function () {
     };
     return AntiReplayWindow;
 }());
-export { AntiReplayWindow };
+exports.AntiReplayWindow = AntiReplayWindow;

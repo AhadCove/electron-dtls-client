@@ -1,3 +1,4 @@
+"use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -8,20 +9,21 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-import { DTLSCiphertext } from "../DTLS/DTLSCiphertext";
-import { DTLSCompressed } from "../DTLS/DTLSCompressed";
-import * as AEADCipher from "./AEADCipher";
-import * as BlockCipher from "./BlockCipher";
-import { HMAC } from "./PRF";
-import { TLSStruct } from "./TLSStruct";
-import * as TypeSpecs from "./TypeSpecs";
+Object.defineProperty(exports, "__esModule", { value: true });
+var DTLSCiphertext_1 = require("../DTLS/DTLSCiphertext");
+var DTLSCompressed_1 = require("../DTLS/DTLSCompressed");
+var AEADCipher = require("./AEADCipher");
+var BlockCipher = require("./BlockCipher");
+var PRF_1 = require("./PRF");
+var TLSStruct_1 = require("./TLSStruct");
+var TypeSpecs = require("./TypeSpecs");
 /**
  * Creates a block cipher delegate used to encrypt packet fragments.
  * @param algorithm - The block cipher algorithm to be used
  */
-export function createMAC(algorithm) {
+function createMAC(algorithm) {
     // const keyLength = MACKeyLengths[algorithm];
-    var MAC = HMAC[algorithm];
+    var MAC = PRF_1.HMAC[algorithm];
     var ret = (function (data, keyMaterial, sourceConnEnd) {
         // find the right hash params
         var mac_key = (sourceConnEnd === "server") ? keyMaterial.server_write_MAC_key : keyMaterial.client_write_MAC_key;
@@ -32,9 +34,10 @@ export function createMAC(algorithm) {
     ret.keyAndHashLength = MAC.keyAndHashLenth;
     return ret;
 }
+exports.createMAC = createMAC;
 /** Creates a dummy cipher which is just an identity operation */
 function createNullCipher() {
-    var ret = (function (packet, _1, _2) { return new DTLSCiphertext(packet.type, packet.version, packet.epoch, packet.sequence_number, packet.fragment); });
+    var ret = (function (packet, _1, _2) { return new DTLSCiphertext_1.DTLSCiphertext(packet.type, packet.version, packet.epoch, packet.sequence_number, packet.fragment); });
     ret.keyLength = 0;
     ret.fixedIvLength = 0;
     ret.recordIvLength = 0;
@@ -42,7 +45,7 @@ function createNullCipher() {
 }
 /** Creates a dummy decipher which is just an identity operation */
 function createNullDecipher() {
-    var ret = (function (packet, _1, _2) { return new DTLSCompressed(packet.type, packet.version, packet.epoch, packet.sequence_number, packet.fragment); });
+    var ret = (function (packet, _1, _2) { return new DTLSCompressed_1.DTLSCompressed(packet.type, packet.version, packet.epoch, packet.sequence_number, packet.fragment); });
     ret.keyLength = 0;
     ret.fixedIvLength = 0;
     ret.recordIvLength = 0;
@@ -177,5 +180,5 @@ var CipherSuite = /** @class */ (function (_super) {
     };
     CipherSuite.spec = TypeSpecs.define.Struct(CipherSuite);
     return CipherSuite;
-}(TLSStruct));
-export { CipherSuite };
+}(TLSStruct_1.TLSStruct));
+exports.CipherSuite = CipherSuite;

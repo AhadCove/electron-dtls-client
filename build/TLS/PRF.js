@@ -1,4 +1,6 @@
-import * as crypto from "crypto";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var crypto = require("crypto");
 function HMAC_factory(algorithm, length) {
     var ret = (function (secret, data) {
         var hmac = crypto.createHmac(algorithm, secret);
@@ -9,7 +11,7 @@ function HMAC_factory(algorithm, length) {
     ret.keyAndHashLenth = length;
     return ret;
 }
-export var HMAC = {
+exports.HMAC = {
     md5: HMAC_factory("md5", 16),
     sha1: HMAC_factory("sha1", 20),
     sha256: HMAC_factory("sha256", 32),
@@ -43,7 +45,7 @@ var Hash = {
  */
 function P(algorithm, secret, seed, length) {
     if (length === void 0) { length = 32; }
-    var _HMAC = HMAC[algorithm];
+    var _HMAC = exports.HMAC[algorithm];
     var _A = [seed];
     function A(i) {
         if (i >= _A.length) {
@@ -63,7 +65,7 @@ function P(algorithm, secret, seed, length) {
     // concatenate the individual hashes and trim it to the desired length
     return Buffer.concat(hashes, length);
 }
-export var PRF = {
+exports.PRF = {
     md5: PRF_factory("md5"),
     sha1: PRF_factory("sha1"),
     sha256: PRF_factory("sha256"),

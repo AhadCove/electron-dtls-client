@@ -1,8 +1,10 @@
-import { bufferToNumber, numberToBuffer } from "../lib/BitConverter";
-import { entries } from "../lib/object-polyfill";
-import * as util from "../lib/util";
-import * as TypeSpecs from "./TypeSpecs";
-import { Vector } from "./Vector";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var BitConverter_1 = require("../lib/BitConverter");
+var object_polyfill_1 = require("../lib/object-polyfill");
+var util = require("../lib/util");
+var TypeSpecs = require("./TypeSpecs");
+var Vector_1 = require("./Vector");
 /**
  * Basisklasse für TLS-Objekte
  */
@@ -11,7 +13,7 @@ var TLSStruct = /** @class */ (function () {
         this.propertyDefinitions = [];
         // Eigenschaften aus Spec kopieren
         this.__spec__ = spec;
-        for (var _i = 0, _a = entries(spec); _i < _a.length; _i++) {
+        for (var _i = 0, _a = object_polyfill_1.entries(spec); _i < _a.length; _i++) {
             var _b = _a[_i], key = _b[0], value = _b[1];
             this.propertyDefinitions.push({
                 name: key,
@@ -41,10 +43,10 @@ var TLSStruct = /** @class */ (function () {
                 case "number":
                 case "enum":
                     var bitSize = TypeSpecs.getPrimitiveSize(type);
-                    result = { result: bufferToNumber(buf, bitSize, offset + delta), readBytes: bitSize / 8 };
+                    result = { result: BitConverter_1.bufferToNumber(buf, bitSize, offset + delta), readBytes: bitSize / 8 };
                     break;
                 case "vector":
-                    result = Vector.from(type, buf, offset + delta);
+                    result = Vector_1.Vector.from(type, buf, offset + delta);
                     break;
                 case "struct":
                     result = type.structType.from(type, buf, offset + delta);
@@ -63,7 +65,7 @@ var TLSStruct = /** @class */ (function () {
                         // for variable length Buffers, read the actual length first
                         if (TypeSpecs.Buffer.isVariableLength(type)) {
                             var lengthBits = (8 * util.fitToWholeBytes(type.maxLength));
-                            length_1 = bufferToNumber(buf, lengthBits, offset + delta);
+                            length_1 = BitConverter_1.bufferToNumber(buf, lengthBits, offset + delta);
                             lengthBytes += lengthBits / 8;
                         }
                         // copy the data into the new buffer
@@ -104,7 +106,7 @@ var TLSStruct = /** @class */ (function () {
                 case "number":
                 case "enum":
                     var bitSize = TypeSpecs.getPrimitiveSize(type);
-                    return numberToBuffer(propValue, bitSize);
+                    return BitConverter_1.numberToBuffer(propValue, bitSize);
                 case "vector":
                     // we know propValue is a Vector<T> but we don't know or care about T
                     return propValue.serialize(type);
@@ -117,7 +119,7 @@ var TLSStruct = /** @class */ (function () {
                     if (TypeSpecs.Buffer.isVariableLength(type)) {
                         var lengthBits = (8 * util.fitToWholeBytes(type.maxLength));
                         result = Buffer.concat([
-                            numberToBuffer(result.length, lengthBits),
+                            BitConverter_1.numberToBuffer(result.length, lengthBits),
                             result,
                         ]);
                     }
@@ -128,4 +130,4 @@ var TLSStruct = /** @class */ (function () {
     };
     return TLSStruct;
 }());
-export { TLSStruct };
+exports.TLSStruct = TLSStruct;

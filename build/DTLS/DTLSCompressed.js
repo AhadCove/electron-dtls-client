@@ -1,3 +1,4 @@
+"use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -8,15 +9,16 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-import { ContentType } from "../TLS/ContentType";
-import { ProtocolVersion } from "../TLS/ProtocolVersion";
-import { TLSStruct } from "../TLS/TLSStruct";
-import * as TypeSpecs from "../TLS/TypeSpecs";
-import { DTLSPlaintext } from "./DTLSPlaintext";
+Object.defineProperty(exports, "__esModule", { value: true });
+var ContentType_1 = require("../TLS/ContentType");
+var ProtocolVersion_1 = require("../TLS/ProtocolVersion");
+var TLSStruct_1 = require("../TLS/TLSStruct");
+var TypeSpecs = require("../TLS/TypeSpecs");
+var DTLSPlaintext_1 = require("./DTLSPlaintext");
 var DTLSCompressed = /** @class */ (function (_super) {
     __extends(DTLSCompressed, _super);
     function DTLSCompressed(type, version, epoch, sequence_number, fragment) {
-        if (version === void 0) { version = new ProtocolVersion(); }
+        if (version === void 0) { version = new ProtocolVersion_1.ProtocolVersion(); }
         var _this = _super.call(this, DTLSCompressed.__spec) || this;
         _this.type = type;
         _this.version = version;
@@ -41,7 +43,7 @@ var DTLSCompressed = /** @class */ (function (_super) {
      * @param decompressor - The decompressor function used to decompress this packet
      */
     DTLSCompressed.prototype.decompress = function (decompressor) {
-        return new DTLSPlaintext(this.type, this.version, this.epoch, this.sequence_number, decompressor(this.fragment));
+        return new DTLSPlaintext_1.DTLSPlaintext(this.type, this.version, this.epoch, this.sequence_number, decompressor(this.fragment));
     };
     /**
      * Computes the MAC header representing this packet. The MAC header is the input buffer of the MAC calculation minus the actual fragment buffer.
@@ -50,8 +52,8 @@ var DTLSCompressed = /** @class */ (function (_super) {
         return (new MACHeader(this.epoch, this.sequence_number, this.type, this.version, this.fragment.length)).serialize();
     };
     DTLSCompressed.__spec = {
-        type: ContentType.__spec,
-        version: TypeSpecs.define.Struct(ProtocolVersion),
+        type: ContentType_1.ContentType.__spec,
+        version: TypeSpecs.define.Struct(ProtocolVersion_1.ProtocolVersion),
         epoch: TypeSpecs.uint16,
         sequence_number: TypeSpecs.uint48,
         // length field is implied in the variable length vector
@@ -59,8 +61,8 @@ var DTLSCompressed = /** @class */ (function (_super) {
     };
     DTLSCompressed.spec = TypeSpecs.define.Struct(DTLSCompressed);
     return DTLSCompressed;
-}(TLSStruct));
-export { DTLSCompressed };
+}(TLSStruct_1.TLSStruct));
+exports.DTLSCompressed = DTLSCompressed;
 var MACHeader = /** @class */ (function (_super) {
     __extends(MACHeader, _super);
     function MACHeader(epoch, sequence_number, type, version, fragment_length) {
@@ -78,10 +80,10 @@ var MACHeader = /** @class */ (function (_super) {
     MACHeader.__spec = {
         epoch: TypeSpecs.uint16,
         sequence_number: TypeSpecs.uint48,
-        type: ContentType.__spec,
-        version: TypeSpecs.define.Struct(ProtocolVersion),
+        type: ContentType_1.ContentType.__spec,
+        version: TypeSpecs.define.Struct(ProtocolVersion_1.ProtocolVersion),
         fragment_length: TypeSpecs.uint16,
     };
     return MACHeader;
-}(TLSStruct));
-export { MACHeader };
+}(TLSStruct_1.TLSStruct));
+exports.MACHeader = MACHeader;

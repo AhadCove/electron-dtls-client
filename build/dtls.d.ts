@@ -1,5 +1,4 @@
 /// <reference types="node" />
-import * as dgram from "dgram";
 import { EventEmitter } from "events";
 import { CipherSuites } from "./DTLS/CipherSuites";
 import { Alert } from "./TLS/Alert";
@@ -67,7 +66,7 @@ export declare namespace dtls {
         ciphers?: (keyof typeof CipherSuites)[];
     }
     type ListeningEventHandler = () => void;
-    type MessageEventHandler = (msg: Buffer, rinfo: dgram.RemoteInfo) => void;
+    type MessageEventHandler = (msg: Buffer, rinfo: any) => void;
     type CloseEventHandler = () => void;
     type ErrorEventHandler = (exception: Error) => void;
     type SendCallback = (error: Error, bytes: number) => void;

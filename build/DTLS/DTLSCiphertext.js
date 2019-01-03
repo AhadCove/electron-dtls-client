@@ -1,3 +1,4 @@
+"use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -8,14 +9,15 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-import { ContentType } from "../TLS/ContentType";
-import { ProtocolVersion } from "../TLS/ProtocolVersion";
-import { TLSStruct } from "../TLS/TLSStruct";
-import * as TypeSpecs from "../TLS/TypeSpecs";
+Object.defineProperty(exports, "__esModule", { value: true });
+var ContentType_1 = require("../TLS/ContentType");
+var ProtocolVersion_1 = require("../TLS/ProtocolVersion");
+var TLSStruct_1 = require("../TLS/TLSStruct");
+var TypeSpecs = require("../TLS/TypeSpecs");
 var DTLSCiphertext = /** @class */ (function (_super) {
     __extends(DTLSCiphertext, _super);
     function DTLSCiphertext(type, version, epoch, sequence_number, fragment) {
-        if (version === void 0) { version = new ProtocolVersion(); }
+        if (version === void 0) { version = new ProtocolVersion_1.ProtocolVersion(); }
         var _this = _super.call(this, DTLSCiphertext.__spec) || this;
         _this.type = type;
         _this.version = version;
@@ -28,8 +30,8 @@ var DTLSCiphertext = /** @class */ (function (_super) {
         return new DTLSCiphertext(null, null, null, null, null);
     };
     DTLSCiphertext.__spec = {
-        type: ContentType.__spec,
-        version: TypeSpecs.define.Struct(ProtocolVersion),
+        type: ContentType_1.ContentType.__spec,
+        version: TypeSpecs.define.Struct(ProtocolVersion_1.ProtocolVersion),
         epoch: TypeSpecs.uint16,
         sequence_number: TypeSpecs.uint48,
         // length field is implied in the variable length vector
@@ -37,5 +39,5 @@ var DTLSCiphertext = /** @class */ (function (_super) {
     };
     DTLSCiphertext.spec = TypeSpecs.define.Struct(DTLSCiphertext);
     return DTLSCiphertext;
-}(TLSStruct));
-export { DTLSCiphertext };
+}(TLSStruct_1.TLSStruct));
+exports.DTLSCiphertext = DTLSCiphertext;

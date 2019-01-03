@@ -1,5 +1,4 @@
 /// <reference types="node" />
-import * as dgram from "dgram";
 import { dtls } from "../dtls";
 import { AntiReplayWindow } from "../TLS/AntiReplayWindow";
 import { ConnectionState } from "../TLS/ConnectionState";
@@ -14,7 +13,7 @@ export interface Epoch {
 export declare class RecordLayer {
     private udpSocket;
     private options;
-    constructor(udpSocket: dgram.Socket, options: dtls.Options);
+    constructor(udpSocket: any, options: dtls.Options);
     /**
      * Transforms the given message into a DTLSCiphertext packet and sends it via UDP
      * @param msg - The message to be sent

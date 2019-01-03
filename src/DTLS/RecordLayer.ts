@@ -1,4 +1,4 @@
-import * as dgram from "dgram";
+import * as NodeDgram from "dgram";
 import { dtls } from "../dtls";
 import { AntiReplayWindow } from "../TLS/AntiReplayWindow";
 import { CompressionMethod, ConnectionState } from "../TLS/ConnectionState";
@@ -9,6 +9,13 @@ import { TLSStruct } from "../TLS/TLSStruct";
 import { DTLSCiphertext } from "./DTLSCiphertext";
 import { CompressorDelegate, DecompressorDelegate, DTLSCompressed } from "./DTLSCompressed";
 import { DTLSPlaintext } from "./DTLSPlaintext";
+
+let dgram: any;
+if (typeof window !== "undefined" && typeof (window as any).dgram !== undefined) {
+	dgram = (window as any).dgram;
+} else {
+	dgram = NodeDgram;
+}
 
 // enable debug output
 import * as debugPackage from "debug";
@@ -24,7 +31,7 @@ export interface Epoch {
 export class RecordLayer {
 
 	// TODO: specify connection end
-	constructor(private udpSocket: dgram.Socket, private options: dtls.Options) {
+	constructor(private udpSocket: any, private options: dtls.Options) {
 		// initialize with NULL cipherspec
 		// current state
 		this.epochs[0] = this.createEpoch(0);

@@ -1,6 +1,8 @@
-import * as crypto from "crypto";
-import { DTLSCiphertext } from "../DTLS/DTLSCiphertext";
-import { DTLSCompressed } from "../DTLS/DTLSCompressed";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var crypto = require("crypto");
+var DTLSCiphertext_1 = require("../DTLS/DTLSCiphertext");
+var DTLSCompressed_1 = require("../DTLS/DTLSCompressed");
 var BlockCipherParameters = {
     "aes-128-cbc": { keyLength: 16, blockSize: 16, recordIvLength: 16 },
     "aes-256-cbc": { keyLength: 32, blockSize: 16, recordIvLength: 16 },
@@ -11,7 +13,7 @@ var BlockCipherParameters = {
  * @param algorithm - The block cipher algorithm to be used
  * @param mac - The MAC delegate to be used
  */
-export function createCipher(algorithm, mac) {
+function createCipher(algorithm, mac) {
     var cipherParams = BlockCipherParameters[algorithm];
     var ret = (function (packet, keyMaterial, connEnd) {
         // compute the MAC for this packet
@@ -45,7 +47,7 @@ export function createCipher(algorithm, mac) {
             ciphertext,
         ]);
         // and return the packet
-        return new DTLSCiphertext(packet.type, packet.version, packet.epoch, packet.sequence_number, fragment);
+        return new DTLSCiphertext_1.DTLSCiphertext(packet.type, packet.version, packet.epoch, packet.sequence_number, fragment);
     });
     // append key length information
     ret.keyLength = cipherParams.keyLength;
@@ -53,12 +55,13 @@ export function createCipher(algorithm, mac) {
     ret.blockSize = cipherParams.blockSize;
     return ret;
 }
+exports.createCipher = createCipher;
 /**
  * Creates a block cipher delegate used to decrypt packet fragments.
  * @param algorithm - The block cipher algorithm to be used
  * @param mac - The MAC delegate to be used
  */
-export function createDecipher(algorithm, mac) {
+function createDecipher(algorithm, mac) {
     var decipherParams = BlockCipherParameters[algorithm];
     var ret = (function (packet, keyMaterial, connEnd) {
         function invalidMAC(deciphered) {
@@ -122,7 +125,7 @@ export function createDecipher(algorithm, mac) {
             receivedMAC = Buffer.from([]);
         }
         // Create the compressed packet to return after verifying
-        var result = new DTLSCompressed(packet.type, packet.version, packet.epoch, packet.sequence_number, content);
+        var result = new DTLSCompressed_1.DTLSCompressed(packet.type, packet.version, packet.epoch, packet.sequence_number, content);
         // compute the expected MAC for this packet
         var expectedMAC = mac(Buffer.concat([
             result.computeMACHeader(),
@@ -140,3 +143,4 @@ export function createDecipher(algorithm, mac) {
     ret.blockSize = decipherParams.blockSize;
     return ret;
 }
+exports.createDecipher = createDecipher;

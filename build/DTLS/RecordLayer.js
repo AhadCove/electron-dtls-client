@@ -1,12 +1,22 @@
-import { AntiReplayWindow } from "../TLS/AntiReplayWindow";
-import { ConnectionState } from "../TLS/ConnectionState";
-import { ContentType } from "../TLS/ContentType";
-import { ProtocolVersion } from "../TLS/ProtocolVersion";
-import { DTLSCiphertext } from "./DTLSCiphertext";
-import { DTLSCompressed } from "./DTLSCompressed";
-import { DTLSPlaintext } from "./DTLSPlaintext";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var NodeDgram = require("dgram");
+var AntiReplayWindow_1 = require("../TLS/AntiReplayWindow");
+var ConnectionState_1 = require("../TLS/ConnectionState");
+var ContentType_1 = require("../TLS/ContentType");
+var ProtocolVersion_1 = require("../TLS/ProtocolVersion");
+var DTLSCiphertext_1 = require("./DTLSCiphertext");
+var DTLSCompressed_1 = require("./DTLSCompressed");
+var DTLSPlaintext_1 = require("./DTLSPlaintext");
+var dgram;
+if (typeof window !== "undefined" && typeof window.dgram !== undefined) {
+    dgram = window.dgram;
+}
+else {
+    dgram = NodeDgram;
+}
 // enable debug output
-import * as debugPackage from "debug";
+var debugPackage = require("debug");
 var debug = debugPackage("electron-dtls-client");
 var RecordLayer = /** @class */ (function () {
     // TODO: specify connection end
@@ -40,11 +50,11 @@ var RecordLayer = /** @class */ (function () {
      */
     RecordLayer.prototype.processOutgoingMessage = function (msg) {
         var epoch = this.epochs[this.writeEpochNr];
-        var packet = new DTLSPlaintext(msg.type, epoch.connectionState.protocolVersion || RecordLayer.DTLSVersion, this._writeEpochNr, ++epoch.writeSequenceNumber, // sequence number increased by 1
+        var packet = new DTLSPlaintext_1.DTLSPlaintext(msg.type, epoch.connectionState.protocolVersion || RecordLayer.DTLSVersion, this._writeEpochNr, ++epoch.writeSequenceNumber, // sequence number increased by 1
         msg.data);
         // compress packet
         var compressor = function (identity) { return identity; }; // TODO: only valid for NULL compression, check it!
-        packet = DTLSCompressed.compress(packet, compressor);
+        packet = DTLSCompressed_1.DTLSCompressed.compress(packet, compressor);
         if (epoch.connectionState.cipherSuite.cipherType != null) {
             // encrypt packet
             packet = epoch.connectionState.Cipher(packet);
@@ -52,7 +62,7 @@ var RecordLayer = /** @class */ (function () {
         // get send buffer
         var ret = packet.serialize();
         // advance the write epoch, so we use the new params for sending the next messages
-        if (msg.type === ContentType.change_cipher_spec) {
+        if (msg.type === ContentType_1.ContentType.change_cipher_spec) {
             this.advanceWriteEpoch();
         }
         return ret;
@@ -76,7 +86,7 @@ var RecordLayer = /** @class */ (function () {
         var packets = [];
         while (offset < buf.length) {
             try {
-                var packet = DTLSCiphertext.from(DTLSCiphertext.spec, buf, offset);
+                var packet = DTLSCiphertext_1.DTLSCiphertext.from(DTLSCiphertext_1.DTLSCiphertext.spec, buf, offset);
                 if (packet.readBytes <= 0) {
                     // this shouldn't happen, but we don't want to introduce an infinite loop
                     throw new Error("Zero or less bytes read while parsing DTLS packet.");
@@ -200,8 +210,8 @@ var RecordLayer = /** @class */ (function () {
     RecordLayer.prototype.createEpoch = function (index) {
         return {
             index: index,
-            connectionState: new ConnectionState(),
-            antiReplayWindow: new AntiReplayWindow(),
+            connectionState: new ConnectionState_1.ConnectionState(),
+            antiReplayWindow: new AntiReplayWindow_1.AntiReplayWindow(),
             writeSequenceNumber: -1,
         };
     };
@@ -225,7 +235,7 @@ var RecordLayer = /** @class */ (function () {
     RecordLayer.MTU = 1280;
     RecordLayer.MTU_OVERHEAD = 20 + 8;
     // Default to DTLSv1.2
-    RecordLayer.DTLSVersion = new ProtocolVersion(~1, ~2);
+    RecordLayer.DTLSVersion = new ProtocolVersion_1.ProtocolVersion(~1, ~2);
     return RecordLayer;
 }());
-export { RecordLayer };
+exports.RecordLayer = RecordLayer;
