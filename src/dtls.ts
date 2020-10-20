@@ -165,6 +165,7 @@ export namespace dtls {
 		private expectHandshake() {
 			if (!this._isClosed && !this._handshakeFinished) {
 				// handshake timed out
+				// TODO: Throws uncaught error here if listener is not listening anymore
 				this.killConnection(new Error("The DTLS handshake timed out"));
 			}
 		}
@@ -251,6 +252,7 @@ export namespace dtls {
 				this.udp.removeAllListeners("close");
 				this.udp.close();
 			}
+			// TODO: error is thrown here because we already stopped listening the the emitters
 			if (err != null) this.emit("error", err);
 		}
 

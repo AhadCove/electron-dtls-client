@@ -1,6 +1,6 @@
 {
   "name": "electron-dtls-client",
-  "version": "0.5.7",
+  "version": "0.6.0",
   "description": "DTLS protocol implementation for Node.js written in TypeScript.",
   "main": "./build/dtls.js",
   "types": "./build/dtls.d.ts",
@@ -38,9 +38,6 @@
   "dependencies": {
     "debug": "^3.1.0",
     "semver": "^5.5.0"
-  },
-  "optionalDependencies": {
-    "node-aead-crypto": "^2.0.0"
   },
   "engines": {
     "node": ">=10"
