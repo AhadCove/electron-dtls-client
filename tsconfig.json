@@ -1,24 +1,18 @@
 {
-    "compileOnSave": true,
-    "compilerOptions": {
-        "outDir": "build/",
-        "target": "es5",
-        "moduleResolution": "node",
-        "module": "commonjs",
-        "declaration": true,
-        "noEmitOnError": true,
-        "noImplicitAny": true,
-        "removeComments": false,
-        "stripInternal": true,
-        "watch": false // true breaks circleci
-    },
-    "include": [
-        "src/**/*.ts"
-    ],
-    "exclude": [
-        "src/**/*.test.ts",
-        "build/**",
-        "node_modules/**"
-    ]
-    
+	"compileOnSave": true,
+	"compilerOptions": {
+		"outDir": "build/",
+		"moduleResolution": "node",
+		"module": "commonjs",
+		"declaration": true,
+		"noEmitOnError": true,
+		"noImplicitAny": true,
+		"removeComments": false,
+		"stripInternal": true,
+		"noUnusedLocals": true,
+		"target": "es2015",
+		"watch": false // true breaks circleci
+	},
+	"include": ["src/**/*.ts"],
+	"exclude": ["src/**/*.test.ts", "build/**", "node_modules/**"]
 }

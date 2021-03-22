@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.extend = exports.filter = exports.values = exports.entries = void 0;
 function entries(obj) {
     return Object.keys(obj)
         .map(function (key) { return [key, obj[key]]; });
@@ -30,9 +31,11 @@ function extend(target, source) {
     for (var _i = 0, _a = entries(source); _i < _a.length; _i++) {
         var _b = _a[_i], prop = _b[0], val = _b[1];
         if (val instanceof Object) {
+            // @ts-ignore This works, too much hassle to satisfy TS 3.5+
             target[prop] = extend(target[prop], val);
         }
         else {
+            // @ts-ignore This works, too much hassle to satisfy TS 3.5+
             target[prop] = val;
         }
     }

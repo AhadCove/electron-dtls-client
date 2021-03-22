@@ -1,17 +1,8 @@
 "use strict";
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 Object.defineProperty(exports, "__esModule", { value: true });
-var TLSStruct_1 = require("./TLSStruct");
-var TypeSpecs = require("./TypeSpecs");
+exports.Alert = exports.AlertDescription = exports.AlertLevel = void 0;
+const TLSStruct_1 = require("./TLSStruct");
+const TypeSpecs = require("./TypeSpecs");
 var AlertLevel;
 (function (AlertLevel) {
     AlertLevel[AlertLevel["warning"] = 1] = "warning";
@@ -44,23 +35,27 @@ var AlertDescription;
     AlertDescription[AlertDescription["user_canceled"] = 90] = "user_canceled";
     AlertDescription[AlertDescription["no_renegotiation"] = 100] = "no_renegotiation";
     AlertDescription[AlertDescription["unsupported_extension"] = 110] = "unsupported_extension";
+    AlertDescription[AlertDescription["certificate_unobtainable_RESERVED"] = 111] = "certificate_unobtainable_RESERVED";
+    AlertDescription[AlertDescription["unrecognized_name"] = 112] = "unrecognized_name";
+    AlertDescription[AlertDescription["bad_certificate_status_response"] = 113] = "bad_certificate_status_response";
+    AlertDescription[AlertDescription["bad_certificate_hash_value_RESERVED"] = 114] = "bad_certificate_hash_value_RESERVED";
+    AlertDescription[AlertDescription["unknown_psk_identity"] = 115] = "unknown_psk_identity";
+    AlertDescription[AlertDescription["certificate_required"] = 116] = "certificate_required";
+    AlertDescription[AlertDescription["no_application_protocol"] = 120] = "no_application_protocol";
 })(AlertDescription = exports.AlertDescription || (exports.AlertDescription = {}));
-var Alert = /** @class */ (function (_super) {
-    __extends(Alert, _super);
-    function Alert(level, description) {
-        var _this = _super.call(this, Alert.__spec) || this;
-        _this.level = level;
-        _this.description = description;
-        return _this;
+class Alert extends TLSStruct_1.TLSStruct {
+    constructor(level, description) {
+        super(Alert.__spec);
+        this.level = level;
+        this.description = description;
     }
-    Alert.createEmpty = function () {
+    static createEmpty() {
         return new Alert(0, 0);
-    };
-    Alert.__spec = {
-        level: TypeSpecs.define.Enum("uint8", AlertLevel),
-        description: TypeSpecs.define.Enum("uint8", AlertDescription),
-    };
-    Alert.spec = TypeSpecs.define.Struct(Alert);
-    return Alert;
-}(TLSStruct_1.TLSStruct));
+    }
+}
 exports.Alert = Alert;
+Alert.__spec = {
+    level: TypeSpecs.define.Enum("uint8", AlertLevel),
+    description: TypeSpecs.define.Enum("uint8", AlertDescription),
+};
+Alert.spec = TypeSpecs.define.Struct(Alert);

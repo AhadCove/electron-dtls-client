@@ -1,25 +1,24 @@
-import * as NodeDgram from "dgram";
-import { dtls } from "../dtls";
-import { AntiReplayWindow } from "../TLS/AntiReplayWindow";
-import { CompressionMethod, ConnectionState } from "../TLS/ConnectionState";
-import { ContentType } from "../TLS/ContentType";
-import { Message } from "../TLS/Message";
-import { ProtocolVersion } from "../TLS/ProtocolVersion";
-import { TLSStruct } from "../TLS/TLSStruct";
-import { DTLSCiphertext } from "./DTLSCiphertext";
-import { CompressorDelegate, DecompressorDelegate, DTLSCompressed } from "./DTLSCompressed";
-import { DTLSPlaintext } from "./DTLSPlaintext";
+import * as NodeDgram from 'dgram';
+// enable debug output
+import * as debugPackage from 'debug';
+import { dtls } from '../dtls';
+import { AntiReplayWindow } from '../TLS/AntiReplayWindow';
+import { ConnectionState } from '../TLS/ConnectionState';
+import { ContentType } from '../TLS/ContentType';
+import { Message } from '../TLS/Message';
+import { ProtocolVersion } from '../TLS/ProtocolVersion';
+import { DTLSCiphertext } from './DTLSCiphertext';
+import { CompressorDelegate, DecompressorDelegate, DTLSCompressed } from './DTLSCompressed';
+import { DTLSPlaintext } from './DTLSPlaintext';
 
 let dgram: any;
-if (typeof window !== "undefined" && typeof (window as any).dgram !== undefined) {
+if (typeof window !== 'undefined' && typeof (window as any).dgram !== undefined) {
 	dgram = (window as any).dgram;
 } else {
 	dgram = NodeDgram;
 }
 
-// enable debug output
-import * as debugPackage from "debug";
-const debug = debugPackage("electron-dtls-client");
+const debug = debugPackage('electron-dtls-client');
 
 export interface Epoch {
 	index: number;
@@ -29,7 +28,6 @@ export interface Epoch {
 }
 
 export class RecordLayer {
-
 	// TODO: specify connection end
 	constructor(private udpSocket: any, private options: dtls.Options) {
 		// initialize with NULL cipherspec
@@ -60,7 +58,7 @@ export class RecordLayer {
 			epoch.connectionState.protocolVersion || RecordLayer.DTLSVersion,
 			this._writeEpochNr,
 			++epoch.writeSequenceNumber, // sequence number increased by 1
-			msg.data,
+			msg.data
 		);
 
 		// compress packet
@@ -81,16 +79,13 @@ export class RecordLayer {
 		}
 
 		return ret;
-
 	}
 	/**
 	 * Sends all messages of a flight in one packet
 	 * @param messages - The messages to be sent
 	 */
 	public sendFlight(messages: Message[], callback?: dtls.SendCallback) {
-		const buf = Buffer.concat(
-			messages.map(msg => this.processOutgoingMessage(msg)),
-			);
+		const buf = Buffer.concat(messages.map((msg) => this.processOutgoingMessage(msg)));
 		this.udpSocket.send(buf, 0, buf.length, this.options.port, this.options.address, callback);
 	}
 
@@ -118,26 +113,25 @@ export class RecordLayer {
 		}
 
 		// now filter packets
-		const knownEpochs = Object.keys(this.epochs).map(k => +k);
-		packets = packets
-			.filter(p => {
-				if (!(p.epoch in knownEpochs)) {
-					// discard packets from an unknown epoch
-					// this will keep packets from the upcoming one
-					return false;
-				} else if (p.epoch < this.readEpochNr) {
-					// discard old packets
-					return false;
-				}
+		const knownEpochs = Object.keys(this.epochs).map((k) => +k);
+		packets = packets.filter((p) => {
+			if (!(p.epoch in knownEpochs)) {
+				// discard packets from an unknown epoch
+				// this will keep packets from the upcoming one
+				return false;
+			} else if (p.epoch < this.readEpochNr) {
+				// discard old packets
+				return false;
+			}
 
-				// discard packets that are not supposed to be received
-				if (!this.epochs[p.epoch].antiReplayWindow.mayReceive(p.sequence_number)) {
-					return false;
-				}
+			// discard packets that are not supposed to be received
+			if (!this.epochs[p.epoch].antiReplayWindow.mayReceive(p.sequence_number)) {
+				return false;
+			}
 
-				// parse the packet
-				return true;
-			});
+			// parse the packet
+			return true;
+		});
 
 		// decompress and decrypt packets
 		const decompressor: DecompressorDelegate = (identity) => identity; // TODO: only valid for NULL compression, check it!
@@ -153,20 +147,18 @@ export class RecordLayer {
 					return null;
 				}
 			})
-			.filter(p => p != null) // filter out packets that couldn't be decrypted
-			.map(p => p.decompress(decompressor))
-			;
+			.filter((p) => p != null) // filter out packets that couldn't be decrypted
+			.map((p) => p.decompress(decompressor));
 
 		// update the anti replay window
 		for (const p of packets) {
 			this.epochs[p.epoch].antiReplayWindow.markAsReceived(p.sequence_number);
 		}
 
-		return packets.map(p => ({
+		return packets.map((p) => ({
 			type: p.type,
 			data: p.fragment,
 		}));
-
 	}
 
 	/**
@@ -174,20 +166,32 @@ export class RecordLayer {
 	 */
 	private epochs: Epoch[] = [];
 	private _readEpochNr: number = 0;
-	public get readEpochNr(): number { return this._readEpochNr; }
+	public get readEpochNr(): number {
+		return this._readEpochNr;
+	}
 	/**
 	 * The current epoch used for reading data
 	 */
-	public get currentReadEpoch(): Epoch { return this.epochs[this._readEpochNr]; }
-	public get nextReadEpoch(): Epoch { return this.epochs[this._readEpochNr + 1]; }
+	public get currentReadEpoch(): Epoch {
+		return this.epochs[this._readEpochNr];
+	}
+	public get nextReadEpoch(): Epoch {
+		return this.epochs[this._readEpochNr + 1];
+	}
 
 	private _writeEpochNr: number = 0;
-	public get writeEpochNr(): number { return this._writeEpochNr; }
+	public get writeEpochNr(): number {
+		return this._writeEpochNr;
+	}
 	/**
 	 * The current epoch used for writing data
 	 */
-	public get currentWriteEpoch(): Epoch { return this.epochs[this._writeEpochNr]; }
-	public get nextWriteEpoch(): Epoch { return this.epochs[this._writeEpochNr + 1]; }
+	public get currentWriteEpoch(): Epoch {
+		return this.epochs[this._writeEpochNr];
+	}
+	public get nextWriteEpoch(): Epoch {
+		return this.epochs[this._writeEpochNr + 1];
+	}
 
 	public get nextEpochNr(): number {
 		return Math.max(this.readEpochNr, this.writeEpochNr) + 1;
@@ -196,7 +200,9 @@ export class RecordLayer {
 	 * The next read and write epoch that will be used.
 	 * Be careful as this might point to the wrong epoch between ChangeCipherSpec messages
 	 */
-	public get nextEpoch(): Epoch { return this.epochs[this.nextEpochNr]; }
+	public get nextEpoch(): Epoch {
+		return this.epochs[this.nextEpochNr];
+	}
 
 	/**
 	 * Ensure there's a next epoch to switch to
@@ -231,9 +237,10 @@ export class RecordLayer {
 	 */
 	public static MTU: number = 1280;
 	public static readonly MTU_OVERHEAD = 20 + 8;
-	public static get MAX_PAYLOAD_SIZE() { return RecordLayer.MTU - RecordLayer.MTU_OVERHEAD; }
+	public static get MAX_PAYLOAD_SIZE() {
+		return RecordLayer.MTU - RecordLayer.MTU_OVERHEAD;
+	}
 
 	// Default to DTLSv1.2
 	public static DTLSVersion = new ProtocolVersion(~1, ~2);
-
 }

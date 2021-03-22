@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var TypeSpecs = require("./TypeSpecs");
+exports.ContentType = void 0;
+const TypeSpecs = require("./TypeSpecs");
 var ContentType;
 (function (ContentType) {
     ContentType[ContentType["change_cipher_spec"] = 20] = "change_cipher_spec";

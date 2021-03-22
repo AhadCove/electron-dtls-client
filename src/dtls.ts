@@ -1,28 +1,25 @@
-﻿import * as NodeDgram from "dgram";
-import { EventEmitter } from "events";
-import { CipherSuites } from "./DTLS/CipherSuites";
-import { FragmentedHandshake } from "./DTLS/Handshake";
-import { ClientHandshakeHandler } from "./DTLS/HandshakeHandler";
-import { RecordLayer } from "./DTLS/RecordLayer";
-import { Alert, AlertDescription, AlertLevel } from "./TLS/Alert";
-import { ChangeCipherSpec } from "./TLS/ChangeCipherSpec";
-import { ContentType } from "./TLS/ContentType";
-import { Message } from "./TLS/Message";
-import { TLSStruct } from "./TLS/TLSStruct";
+﻿import * as NodeDgram from 'dgram'; // enable debug output
+import * as debugPackage from 'debug';
+import { EventEmitter } from 'events';
+import { CipherSuites } from './DTLS/CipherSuites';
+import { FragmentedHandshake } from './DTLS/Handshake';
+import { ClientHandshakeHandler } from './DTLS/HandshakeHandler';
+import { RecordLayer } from './DTLS/RecordLayer';
+import { Alert, AlertDescription, AlertLevel } from './TLS/Alert';
+import { ContentType } from './TLS/ContentType';
+import { Message } from './TLS/Message';
+import { TLSStruct } from './TLS/TLSStruct';
 
 let dgram: any;
-if (typeof window !== "undefined" && typeof (window as any).dgram !== undefined) {
+if (typeof window !== 'undefined' && typeof (window as any).dgram !== undefined) {
 	dgram = (window as any).dgram;
 } else {
 	dgram = NodeDgram;
 }
 
-// enable debug output
-import * as debugPackage from "debug";
-const debug = debugPackage("electron-dtls-client");
+const debug = debugPackage('electron-dtls-client');
 
 export namespace dtls {
-
 	/**
 	 * Creates a DTLS-secured socket.
 	 * @param options - The options used to create the socket
@@ -34,8 +31,8 @@ export namespace dtls {
 
 		// bind "message" event after the handshake is finished
 		if (callback != null) {
-			ret.once("connected", () => {
-				ret.on("message", callback);
+			ret.once('connected', () => {
+				ret.on('message', callback);
 			});
 		}
 		return ret;
@@ -45,7 +42,6 @@ export namespace dtls {
 	 * DTLS-secured UDP socket. Can be used as a drop-in replacement for dgram.Socket
 	 */
 	export class Socket extends EventEmitter {
-
 		/**
 		 * INTERNAL USE, DON'T CALL DIRECTLY. use createSocket instead!
 		 */
@@ -54,11 +50,10 @@ export namespace dtls {
 			// setup the connection
 			this.udp = dgram
 				.createSocket(options)
-				.on("listening", this.udp_onListening.bind(this))
-				.on("message", this.udp_onMessage.bind(this))
-				.on("close", this.udp_onClose.bind(this))
-				.on("error", this.udp_onError.bind(this))
-				;
+				.on('listening', this.udp_onListening.bind(this))
+				.on('message', this.udp_onMessage.bind(this))
+				.on('close', this.udp_onClose.bind(this))
+				.on('error', this.udp_onError.bind(this));
 
 			// setup a timeout watcher. Default: 1000ms timeout, minimum: 100ms
 			this.options.timeout = Math.max(100, this.options.timeout || 1000);
@@ -66,7 +61,11 @@ export namespace dtls {
 			this._connectionTimeout = setTimeout(() => this.expectConnection(), this.options.timeout);
 
 			// start the connection
-			this.udp.bind();
+			if (options.listenPort != undefined) {
+				this.udp.bind(options.listenPort);
+			} else {
+				this.udp.bind();
+			}
 		}
 
 		private recordLayer: RecordLayer;
@@ -79,12 +78,11 @@ export namespace dtls {
 		 * Send the given data. It is automatically compressed and encrypted.
 		 */
 		public send(data: Buffer, callback?: SendCallback) {
-
 			if (this._isClosed) {
-				throw new Error("The socket is closed. Cannot send data.");
+				throw new Error('The socket is closed. Cannot send data.');
 			}
 			if (!this._handshakeFinished) {
-				throw new Error("DTLS handshake is not finished yet. Cannot send data.");
+				throw new Error('DTLS handshake is not finished yet. Cannot send data.');
 			}
 
 			// send finished data over UDP
@@ -100,17 +98,14 @@ export namespace dtls {
 		 * Closes the connection
 		 */
 		public close(callback?: CloseEventHandler) {
-			this.sendAlert(
-				new Alert(AlertLevel.warning, AlertDescription.close_notify),
-				(e) => {
-					this.udp.close();
-					if (callback) this.once("close", callback);
-				},
-			);
+			this.sendAlert(new Alert(AlertLevel.warning, AlertDescription.close_notify), (e) => {
+				this.udp.close();
+				if (callback) this.once('close', callback);
+			});
 		}
 
 		// buffer messages while handshaking
-		private bufferedMessages: {msg: Message, rinfo: any}[] = [];
+		private bufferedMessages: { msg: Message; rinfo: any }[] = [];
 
 		/*
 			Internal Socket handler functions
@@ -126,47 +121,45 @@ export namespace dtls {
 			// reuse the connection timeout for handshake timeout watching
 			this._connectionTimeout = setTimeout(() => this.expectHandshake(), this.options.timeout);
 			// also start handshake
-			this.handshakeHandler = new ClientHandshakeHandler(this.recordLayer, this.options,
-				(alert?: Alert, err?: Error) => {
-					const nextStep = () => {
-						// if we have an error, terminate the connection
-						if (err) {
-							// something happened on the way to heaven
-							this.killConnection(err);
-						} else {
-							// when done, emit "connected" event
-							this._handshakeFinished = true;
-							if (this._connectionTimeout != null) clearTimeout(this._connectionTimeout);
-							this.emit("connected");
-							// also emit all buffered messages
-							for (const { msg, rinfo } of this.bufferedMessages) {
-								this.emit("message", msg.data, rinfo);
-							}
-							this.bufferedMessages = [];
-						}
-					};
-					// if we have an alert, send it to the other party
-					if (alert) {
-						this.sendAlert(alert, nextStep);
+			this.handshakeHandler = new ClientHandshakeHandler(this.recordLayer, this.options, (alert?: Alert, err?: Error) => {
+				const nextStep = () => {
+					// if we have an error, terminate the connection
+					if (err) {
+						// something happened on the way to heaven
+						this.killConnection(err);
 					} else {
-						nextStep();
+						// when done, emit "connected" event
+						this._handshakeFinished = true;
+						if (this._connectionTimeout != null) clearTimeout(this._connectionTimeout);
+						this.emit('connected');
+						// also emit all buffered messages
+						for (const { msg, rinfo } of this.bufferedMessages) {
+							this.emit('message', msg.data, rinfo);
+						}
+						this.bufferedMessages = [];
 					}
-				},
-			);
+				};
+				// if we have an alert, send it to the other party
+				if (alert) {
+					this.sendAlert(alert, nextStep);
+				} else {
+					nextStep();
+				}
+			});
 		}
 		// is called after the connection timeout expired.
 		// Check the connection and throws if it is not established yet
 		private expectConnection() {
 			if (!this._isClosed && !this._udpConnected) {
 				// connection timed out
-				this.killConnection(new Error("The connection timed out"));
+				this.killConnection(new Error('The connection timed out'));
 			}
 		}
 		private expectHandshake() {
 			if (!this._isClosed && !this._handshakeFinished) {
 				// handshake timed out
 				// TODO: Throws uncaught error here if listener is not listening anymore
-				this.killConnection(new Error("The DTLS handshake timed out"));
+				this.killConnection(new Error('The DTLS handshake timed out'));
 			}
 		}
 
@@ -214,12 +207,12 @@ export namespace dtls {
 					case ContentType.application_data:
 						if (!this._handshakeFinished) {
 							// if we are still shaking hands, buffer the message until we're done
-							this.bufferedMessages.push({msg, rinfo});
-						} else /* finished */ {
+							this.bufferedMessages.push({ msg, rinfo });
+						} /* finished */ else {
 							// else emit the message
 							// TODO: extend params?
 							// TODO: do we need to emit rinfo?
-							this.emit("message", msg.data, rinfo);
+							this.emit('message', msg.data, rinfo);
 						}
 						break;
 				}
@@ -232,7 +225,7 @@ export namespace dtls {
 			this.udp.removeAllListeners();
 			if (!this._isClosed) {
 				this._isClosed = true;
-				this.emit("close");
+				this.emit('close');
 			}
 		}
 		private udp_onError(exception: Error) {
@@ -247,20 +240,19 @@ export namespace dtls {
 			if (this._connectionTimeout != null) clearTimeout(this._connectionTimeout);
 			if (this.udp != null) {
 				// keep the error handler around or we get spurious ENOTFOUND errors unhandled
-				this.udp.removeAllListeners("listening");
-				this.udp.removeAllListeners("message");
-				this.udp.removeAllListeners("close");
+				this.udp.removeAllListeners('listening');
+				this.udp.removeAllListeners('message');
+				this.udp.removeAllListeners('close');
 				this.udp.close();
 			}
 			// TODO: error is thrown here because we already stopped listening the the emitters
-			if (err != null) this.emit("error", err);
+			if (err != null) this.emit('error', err);
 		}
-
 	}
 
 	export interface Options {
 		/** the type of the underlying socket */
-		type: "udp4" | "udp6";
+		type: 'udp4' | 'udp6';
 		/** ?? see NodeJS docs */
 		reuseAddr?: boolean;
 		/** The remote address to connect to */
@@ -277,17 +269,22 @@ export namespace dtls {
 		 * All supported cipher suites are used if not specified otherwise.
 		 */
 		ciphers?: (keyof typeof CipherSuites)[];
+		/** The local port to listen at */
+		listenPort?: number;
 	}
 	/**
 	 * Checks if a given object adheres to the Options interface definition
 	 * Throws if it doesn't.
 	 */
 	function checkOptions(opts: Options) {
-		if (opts == null) throw new Error("No connection options were given!");
-		if (opts.type !== "udp4" && opts.type !== "udp6") throw new Error(`The connection options must have a "type" property with value "udp4" or "udp6"!`);
-		if (typeof opts.address !== "string" || opts.address.length === 0) throw new Error(`The connection options must contain the remote address as a string!`);
-		if (typeof opts.port !== "number" || opts.port < 1 || opts.port > 65535) throw new Error(`The connection options must contain a remote port from 1 to 65535!`);
-		if (typeof opts.psk !== "object") throw new Error(`The connection options must contain a PSK dictionary object!`);
+		if (opts == null) throw new Error('No connection options were given!');
+		if (opts.type !== 'udp4' && opts.type !== 'udp6') throw new Error(`The connection options must have a "type" property with value "udp4" or "udp6"!`);
+		if (typeof opts.address !== 'string' || opts.address.length === 0) throw new Error(`The connection options must contain the remote address as a string!`);
+		if (typeof opts.port !== 'number' || opts.port < 1 || opts.port > 65535) throw new Error(`The connection options must contain a remote port from 1 to 65535!`);
+		if (opts.listenPort != undefined) {
+			if (typeof opts.listenPort !== 'number' || !Number.isInteger(opts.listenPort) || opts.listenPort < 1 || opts.listenPort > 65535) throw new Error(`The listen port must be between 1 and 65535!`);
+		}
+		if (typeof opts.psk !== 'object') throw new Error(`The connection options must contain a PSK dictionary object!`);
 	}
 
 	export type ListeningEventHandler = () => void;

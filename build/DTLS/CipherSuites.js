@@ -1,7 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var object_polyfill_1 = require("../lib/object-polyfill");
-var CipherSuite_1 = require("../TLS/CipherSuite");
+exports.CipherSuites = void 0;
+const object_polyfill_1 = require("../lib/object-polyfill");
+const CipherSuite_1 = require("../TLS/CipherSuite");
 // block sizes etc. see https://tools.ietf.org/html/rfc5246 page 83
 exports.CipherSuites = {
     TLS_NULL_WITH_NULL_NULL: new CipherSuite_1.CipherSuite(0x0000, null, null, null, null),
@@ -66,10 +67,10 @@ exports.CipherSuites = {
     TLS_PSK_WITH_AES_256_CCM_8: new CipherSuite_1.CipherSuite(0xC0A9, "psk", null, "sha256", "aead", "aes-256-ccm8"),
     TLS_PSK_DHE_WITH_AES_128_CCM_8: new CipherSuite_1.CipherSuite(0xC0AA, "dhe_psk", null, "sha256", "aead", "aes-128-ccm8"),
     TLS_PSK_DHE_WITH_AES_256_CCM_8: new CipherSuite_1.CipherSuite(0xC0AB, "dhe_psk", null, "sha256", "aead", "aes-256-ccm8"),
+    // TRADFRI wants TLS_PSK_WITH_AES_128_CCM_8 or TLS_PSK_WITH_AES_128_CBC_SHA256
 };
 // define index accessors
-for (var _i = 0, _a = object_polyfill_1.entries(exports.CipherSuites); _i < _a.length; _i++) {
-    var _b = _a[_i], key = _b[0], cs = _b[1];
+for (const cs of object_polyfill_1.values(exports.CipherSuites)) {
     if (!exports.CipherSuites.hasOwnProperty("" + cs.id)) {
         exports.CipherSuites[cs.id] = cs;
     }

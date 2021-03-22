@@ -115,7 +115,7 @@ export declare class CipherSuite extends TLSStruct {
     readonly macAlgorithm: HashAlgorithm;
     readonly prfAlgorithm: HashAlgorithm;
     readonly cipherType: CipherType;
-    readonly algorithm: (BlockCipher.BlockCipherAlgorithm | AEADCipher.AEADCipherAlgorithm);
+    readonly algorithm?: (BlockCipher.BlockCipherAlgorithm | AEADCipher.AEADCipherAlgorithm);
     readonly verify_data_length: number;
     static readonly __spec: {
         id: Readonly<TypeSpecs.Number>;
@@ -124,14 +124,14 @@ export declare class CipherSuite extends TLSStruct {
     constructor(id: number, keyExchange: KeyExchangeAlgorithm, macAlgorithm: HashAlgorithm, prfAlgorithm: HashAlgorithm, cipherType: CipherType, algorithm?: (BlockCipher.BlockCipherAlgorithm | AEADCipher.AEADCipherAlgorithm), verify_data_length?: number);
     static createEmpty(): CipherSuite;
     private _cipher;
-    readonly Cipher: GenericCipherDelegate;
-    private createCipher();
+    get Cipher(): GenericCipherDelegate;
+    private createCipher;
     specifyCipher(keyMaterial: KeyMaterial, connEnd: ConnectionEnd): CipherDelegate;
     private _decipher;
-    readonly Decipher: GenericDecipherDelegate;
-    private createDecipher();
+    get Decipher(): GenericDecipherDelegate;
+    private createDecipher;
     specifyDecipher(keyMaterial: KeyMaterial, connEnd: ConnectionEnd): DecipherDelegate;
     private _mac;
-    readonly MAC: GenericMacDelegate;
-    private createMAC();
+    get MAC(): GenericMacDelegate;
+    private createMAC;
 }

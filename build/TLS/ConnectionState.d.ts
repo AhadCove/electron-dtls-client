@@ -4,7 +4,7 @@ import { CipherDelegate, CipherSuite, DecipherDelegate, KeyMaterial } from "./Ci
 import { PreMasterSecret } from "./PreMasterSecret";
 import * as TypeSpecs from "./TypeSpecs";
 export declare enum CompressionMethod {
-    null = 0,
+    null = 0
 }
 export declare namespace CompressionMethod {
     const spec: TypeSpecs.Enum;
@@ -20,9 +20,9 @@ export declare class ConnectionState {
     server_random: Buffer;
     key_material: KeyMaterial;
     private _cipher;
-    readonly Cipher: CipherDelegate;
+    get Cipher(): CipherDelegate;
     private _decipher;
-    readonly Decipher: DecipherDelegate;
+    get Decipher(): DecipherDelegate;
     /**
      * Compute the master secret from a given premaster secret
      * @param preMasterSecret - The secret used to calculate the master secret
@@ -33,5 +33,5 @@ export declare class ConnectionState {
     /**
      * Calculates the key components
      */
-    private computeKeyMaterial();
+    private computeKeyMaterial;
 }

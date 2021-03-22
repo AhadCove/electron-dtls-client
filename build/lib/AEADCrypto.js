@@ -1,50 +1,53 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var crypto = require("crypto");
+exports.gcm = exports.ccm = void 0;
+const crypto = require("crypto");
 function encryptNative(mode, key, iv, plaintext, additionalData, authTagLength) {
     // prepare encryption
-    var algorithm = "aes-" + key.length * 8 + "-" + mode;
+    const algorithm = `aes-${key.length * 8}-${mode}`;
     // @ts-ignore The 4th parameter is available starting in NodeJS 10+
-    var cipher = crypto.createCipheriv(algorithm, key, iv, { authTagLength: authTagLength });
+    const cipher = crypto.createCipheriv(algorithm, key, iv, { authTagLength });
     // @ts-ignore The 2nd parameter is available starting in NodeJS 10+
     cipher.setAAD(additionalData, { plaintextLength: plaintext.length });
     // do encryption
-    var ciphertext = cipher.update(plaintext);
+    const ciphertext = cipher.update(plaintext);
     cipher.final();
-    var auth_tag = cipher.getAuthTag();
-    return { ciphertext: ciphertext, auth_tag: auth_tag };
+    const auth_tag = cipher.getAuthTag();
+    return { ciphertext, auth_tag };
 }
 function decryptNative(mode, key, iv, ciphertext, additionalData, authTag) {
     // prepare decryption
-    var algorithm = "aes-" + key.length * 8 + "-" + mode;
+    const algorithm = `aes-${key.length * 8}-${mode}`;
     // @ts-ignore The 4th parameter is available starting in NodeJS 10+
-    var decipher = crypto.createDecipheriv(algorithm, key, iv, { authTagLength: authTag.length });
+    const decipher = crypto.createDecipheriv(algorithm, key, iv, { authTagLength: authTag.length });
     decipher.setAuthTag(authTag);
     // @ts-ignore The 2nd parameter is available starting in NodeJS 10+
     decipher.setAAD(additionalData, { plaintextLength: ciphertext.length });
     // do decryption
-    var plaintext = decipher.update(ciphertext);
+    const plaintext = decipher.update(ciphertext);
     // verify decryption
-    var auth_ok = false;
+    let auth_ok = false;
     try {
         decipher.final();
         auth_ok = true;
     }
-    catch (e) { /* nothing to do */ }
-    return { plaintext: plaintext, auth_ok: auth_ok };
+    catch (e) {
+        /* nothing to do */
+    }
+    return { plaintext, auth_ok };
 }
-var importedCCM;
-var importedGCM;
-var nativeCCM;
-var nativeGCM;
+let importedCCM;
+let importedGCM;
+let nativeCCM;
+let nativeGCM;
 // We can use the native methods
 nativeCCM = {
-    encrypt: encryptNative.bind(undefined, "ccm"),
-    decrypt: decryptNative.bind(undefined, "ccm"),
+    encrypt: encryptNative.bind(undefined, 'ccm'),
+    decrypt: decryptNative.bind(undefined, 'ccm'),
 };
 nativeGCM = {
-    encrypt: encryptNative.bind(undefined, "gcm"),
-    decrypt: decryptNative.bind(undefined, "gcm"),
+    encrypt: encryptNative.bind(undefined, 'gcm'),
+    decrypt: decryptNative.bind(undefined, 'gcm'),
 };
 exports.ccm = importedCCM || nativeCCM;
 exports.gcm = importedGCM || nativeGCM;
