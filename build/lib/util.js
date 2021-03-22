@@ -7,7 +7,7 @@ exports.fitToWholeBytes = void 0;
  * @returns {number}
  */
 function fitToWholeBytes(value) {
-    var ret = 0;
+    let ret = 0;
     while (value !== 0) {
         ret++;
         value >>>= 8;

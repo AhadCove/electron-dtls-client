@@ -1,5 +1,4 @@
-import * as crypto from "crypto";
-import * as semver from "semver";
+import * as crypto from 'crypto';
 
 /**
  * Starting with NodeJS 10, we can use the official crypto API to do AEAD encryption
@@ -16,32 +15,12 @@ export interface DecryptionResult {
 }
 
 export interface AEADEncryptionInterface {
-	encrypt: (
-		key: Buffer,
-		iv: Buffer,
-		plaintext: Buffer,
-		additionalData: Buffer,
-		authTagLength?: number,
-	) => EncryptionResult;
+	encrypt: (key: Buffer, iv: Buffer, plaintext: Buffer, additionalData: Buffer, authTagLength?: number) => EncryptionResult;
 
-	decrypt: (
-		key: Buffer,
-		iv: Buffer,
-		ciphertext: Buffer,
-		additionalData: Buffer,
-		authTag: Buffer,
-	) => DecryptionResult;
+	decrypt: (key: Buffer, iv: Buffer, ciphertext: Buffer, additionalData: Buffer, authTag: Buffer) => DecryptionResult;
 }
 
-function encryptNative(
-	mode: "ccm" | "gcm",
-	key: Buffer,
-	iv: Buffer,
-	plaintext: Buffer,
-	additionalData: Buffer,
-	authTagLength: number,
-): EncryptionResult {
-
+function encryptNative(mode: 'ccm' | 'gcm', key: Buffer, iv: Buffer, plaintext: Buffer, additionalData: Buffer, authTagLength: number): EncryptionResult {
 	// prepare encryption
 	const algorithm = `aes-${key.length * 8}-${mode}`;
 	// @ts-ignore The 4th parameter is available starting in NodeJS 10+
@@ -57,15 +36,7 @@ function encryptNative(
 	return { ciphertext, auth_tag };
 }
 
-function decryptNative(
-	mode: "ccm" | "gcm",
-	key: Buffer,
-	iv: Buffer,
-	ciphertext: Buffer,
-	additionalData: Buffer,
-	authTag: Buffer,
-): DecryptionResult {
-
+function decryptNative(mode: 'ccm' | 'gcm', key: Buffer, iv: Buffer, ciphertext: Buffer, additionalData: Buffer, authTag: Buffer): DecryptionResult {
 	// prepare decryption
 	const algorithm = `aes-${key.length * 8}-${mode}`;
 	// @ts-ignore The 4th parameter is available starting in NodeJS 10+
@@ -81,7 +52,9 @@ function decryptNative(
 	try {
 		decipher.final();
 		auth_ok = true;
-	} catch (e) {/* nothing to do */ }
+	} catch (e) {
+		/* nothing to do */
+	}
 	return { plaintext, auth_ok };
 }
 
@@ -93,12 +66,12 @@ let nativeGCM: AEADEncryptionInterface;
 
 // We can use the native methods
 nativeCCM = {
-	encrypt: encryptNative.bind(undefined, "ccm"),
-	decrypt: decryptNative.bind(undefined, "ccm"),
+	encrypt: encryptNative.bind(undefined, 'ccm'),
+	decrypt: decryptNative.bind(undefined, 'ccm'),
 };
 nativeGCM = {
-	encrypt: encryptNative.bind(undefined, "gcm"),
-	decrypt: decryptNative.bind(undefined, "gcm"),
+	encrypt: encryptNative.bind(undefined, 'gcm'),
+	decrypt: decryptNative.bind(undefined, 'gcm'),
 };
 
 export const ccm = importedCCM || nativeCCM;

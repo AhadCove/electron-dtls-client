@@ -1,7 +1,7 @@
 /// <reference types="node" />
-import { EventEmitter } from "events";
-import { CipherSuites } from "./DTLS/CipherSuites";
-import { Alert } from "./TLS/Alert";
+import { EventEmitter } from 'events';
+import { CipherSuites } from './DTLS/CipherSuites';
+import { Alert } from './TLS/Alert';
 export declare namespace dtls {
     /**
      * Creates a DTLS-secured socket.
@@ -46,7 +46,7 @@ export declare namespace dtls {
     }
     interface Options {
         /** the type of the underlying socket */
-        type: "udp4" | "udp6";
+        type: 'udp4' | 'udp6';
         /** ?? see NodeJS docs */
         reuseAddr?: boolean;
         /** The remote address to connect to */
@@ -64,7 +64,7 @@ export declare namespace dtls {
          * All supported cipher suites are used if not specified otherwise.
          */
         ciphers?: (keyof typeof CipherSuites)[];
-        /** The local port to listen at*/
+        /** The local port to listen at */
         listenPort?: number;
     }
     type ListeningEventHandler = () => void;

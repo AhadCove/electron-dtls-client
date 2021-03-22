@@ -1,4 +1,3 @@
-import * as NodeDgram from 'dgram';
 // enable debug output
 import * as debugPackage from 'debug';
 import { dtls } from '../dtls';
@@ -10,13 +9,6 @@ import { ProtocolVersion } from '../TLS/ProtocolVersion';
 import { DTLSCiphertext } from './DTLSCiphertext';
 import { CompressorDelegate, DecompressorDelegate, DTLSCompressed } from './DTLSCompressed';
 import { DTLSPlaintext } from './DTLSPlaintext';
-
-let dgram: any;
-if (typeof window !== 'undefined' && typeof (window as any).dgram !== undefined) {
-	dgram = (window as any).dgram;
-} else {
-	dgram = NodeDgram;
-}
 
 const debug = debugPackage('electron-dtls-client');
 
